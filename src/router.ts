@@ -79,7 +79,7 @@ export function createIntrospectionRouter(
   const serializer = serializerOverride ?? detectSerializer(appRouter._def._config)
 
   const result: IntrospectionResult = {
-    ...meta,
+    ...(meta?.name && { name: meta.name }),
     description: mergeDescription(
       generateDescription(serializer, procedures, path),
       meta?.description,
@@ -106,7 +106,7 @@ export function createIntrospectionRouter(
   for (const prefix of prefixes) {
     const filtered = procedures.filter(p => p.path === prefix || p.path.startsWith(`${prefix}.`))
     const prefixResult: IntrospectionResult = {
-      ...meta,
+      ...(meta?.name && { name: meta.name }),
       description: mergeDescription(
         generateDescription(serializer, filtered, path),
         meta?.description,

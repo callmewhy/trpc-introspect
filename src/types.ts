@@ -23,14 +23,14 @@ export interface IntrospectionResult {
   serializer: Serializer
   pathFilter?: string
   procedures: EndpointInfo[]
-  [key: string]: unknown
 }
 
 export interface IntrospectionRouterOptions<TPath extends string = string> extends IntrospectOptions {
   enabled?: boolean
   path?: TPath
   serializer?: Serializer
-  meta?: Record<string, unknown> & {
+  meta?: {
+    name?: string
     description?: string
   }
 }
