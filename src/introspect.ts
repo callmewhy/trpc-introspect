@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import type { EndpointInfo, IntrospectOptions, JSONSchema } from './types'
 
-interface ZodSchemaWithInternalDef extends z.ZodType {
+interface ZodSchemaWithInternalDef {
   _zod?: { def?: { type?: string } }
   def?: { type?: string }
 }
@@ -109,7 +109,7 @@ function toJSONSchema(schema: unknown) {
     const jsonSchema = z.toJSONSchema(schema, {
       unrepresentable: 'any',
       override: (ctx) => {
-        const zodSchema = ctx.zodSchema as ZodSchemaWithInternalDef
+        const zodSchema = ctx.zodSchema as unknown as ZodSchemaWithInternalDef
         const type = zodSchema._zod?.def?.type ?? zodSchema.def?.type
 
         if (type === 'date') {

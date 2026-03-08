@@ -3,16 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
 import { addIntrospectionEndpoint, createIntrospectionRouter, withIntrospection } from '../src'
-import { getResolver, mockProcedure, mockRouter } from './helpers'
-
-function mockT() {
-  return {
-    procedure: {
-      query: (resolver: () => unknown) => ({ _type: 'query', resolver, _def: { resolver } }),
-    },
-    router: (procedures: Record<string, unknown>) => ({ _def: { procedures } }),
-  }
-}
+import { getResolver, mockProcedure, mockRouter, mockT } from './helpers'
 
 describe('createIntrospectionRouter', () => {
   it('creates a router with _introspect and _introspect.skill.md procedures', () => {

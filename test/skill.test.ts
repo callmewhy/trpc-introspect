@@ -1,16 +1,8 @@
+import type { AnyTRPCRouter } from '@trpc/server'
 import { describe, expect, it } from 'vitest'
 
 import { createIntrospectionRouter } from '../src'
-import { getResolver, mockRouter } from './helpers'
-
-function mockT() {
-  return {
-    procedure: {
-      query: (resolver: () => unknown) => ({ _type: 'query', resolver, _def: { resolver } }),
-    },
-    router: (procedures: Record<string, unknown>) => ({ _def: { procedures } }),
-  }
-}
+import { getResolver, mockRouter, mockT } from './helpers'
 
 describe('skill endpoint', () => {
   it('returns plain JSON skill text by default', () => {
@@ -32,7 +24,7 @@ describe('skill endpoint', () => {
           },
         },
       },
-    }
+    } as unknown as AnyTRPCRouter
 
     const result = createIntrospectionRouter(mockT(), appRouter)
     const skillText = getResolver(result, '_introspect.skill.md')() as string

@@ -1,6 +1,6 @@
 {
   "name": "trpc-introspect",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -22,7 +22,7 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "tsdown",
+    "build": "tsc --noEmit && tsdown",
     "clean": "rm -rf dist",
     "lint": "eslint \"src/**/*.ts\" --fix --max-warnings 0",
     "test": "vitest run",
