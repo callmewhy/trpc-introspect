@@ -1,7 +1,8 @@
 # trpc-introspect
 
 Introspection for tRPC routers. Adds a query endpoint that returns all available API procedures with
-their types plus input and output schemas as JSON Schema.
+their types, descriptions, and input/output schemas as JSON Schema. Designed for AI agents to
+autonomously discover and learn how to use your API.
 
 ## Install
 
@@ -18,12 +19,15 @@ import {initTRPC} from '@trpc/server'
 import {z} from 'zod'
 import {withIntrospection} from 'trpc-introspect'
 
-const t = initTRPC.create()
+const t = initTRPC.meta<{description?: string}>().create()
 
 const appRouter = t.router({
   user: t.router({
-    list: t.procedure.query(() => []),
+    list: t.procedure
+      .meta({description: 'List all users'})
+      .query(() => []),
     create: t.procedure
+      .meta({description: 'Create a new user'})
       .input(z.object({name: z.string()}))
       .mutation(({input}) => input),
   }),
@@ -50,11 +54,13 @@ The `_introspect` query returns:
   "procedures": [
     {
       "path": "user.list",
-      "type": "query"
+      "type": "query",
+      "description": "List all users"
     },
     {
       "path": "user.create",
       "type": "mutation",
+      "description": "Create a new user",
       "input": {
         "type": "object",
         "properties": {

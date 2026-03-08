@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 import { withIntrospection } from '../src'
 
-const t = initTRPC.create()
+const t = initTRPC.meta<{ description?: string }>().create()
 
 // In-memory data store
 const users: { id: number, name: string, email: string }[] = [
@@ -16,9 +16,12 @@ let nextId = 3
 
 const appRouter = t.router({
   user: t.router({
-    list: t.procedure.query(() => users),
+    list: t.procedure
+      .meta({ description: 'List all users' })
+      .query(() => users),
 
     getById: t.procedure
+      .meta({ description: 'Get a user by ID' })
       .input(z.object({ id: z.number() }))
       .query(({ input }) => {
         const user = users.find(u => u.id === input.id)
@@ -28,6 +31,7 @@ const appRouter = t.router({
       }),
 
     create: t.procedure
+      .meta({ description: 'Create a new user with name and email' })
       .input(z.object({ name: z.string(), email: z.string().email() }))
       .mutation(({ input }) => {
         const user = { id: nextId++, ...input }
@@ -36,6 +40,7 @@ const appRouter = t.router({
       }),
 
     update: t.procedure
+      .meta({ description: 'Update an existing user by ID' })
       .input(z.object({
         id: z.number(),
         name: z.string().optional(),
@@ -53,6 +58,7 @@ const appRouter = t.router({
       }),
 
     delete: t.procedure
+      .meta({ description: 'Delete a user by ID' })
       .input(z.object({ id: z.number() }))
       .mutation(({ input }) => {
         const idx = users.findIndex(u => u.id === input.id)
@@ -63,7 +69,9 @@ const appRouter = t.router({
   }),
 
   health: t.router({
-    check: t.procedure.query(() => ({ status: 'ok', timestamp: Date.now() })),
+    check: t.procedure
+      .meta({ description: 'Health check' })
+      .query(() => ({ status: 'ok', timestamp: Date.now() })),
   }),
 })
 
