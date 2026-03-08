@@ -15,25 +15,34 @@ Peer dependencies: `@trpc/server >= 11`, `zod >= 4`
 ## Usage
 
 ```ts
-import {initTRPC} from '@trpc/server'
-import {z} from 'zod'
-import {withIntrospection} from 'trpc-introspect'
+import { initTRPC } from '@trpc/server'
+import { z } from 'zod'
+import { withIntrospection } from 'trpc-introspect'
 
-const t = initTRPC.meta<{description?: string}>().create()
+const t = initTRPC.meta<{ description?: string }>().create()
+
+const p = t.procedure
+
+const userList = p
+  .meta({ description: 'List all users' })
+  .query(() => [])
+
+const userCreate = p
+  .meta({ description: 'Create a new user' })
+  .input(z.object({ name: z.string() }))
+  .mutation(({ input }) => input)
 
 const appRouter = t.router({
   user: t.router({
-    list: t.procedure
-      .meta({description: 'List all users'})
-      .query(() => []),
-    create: t.procedure
-      .meta({description: 'Create a new user'})
-      .input(z.object({name: z.string()}))
-      .mutation(({input}) => input),
+    list: userList,
+    create: userCreate,
   }),
 })
 
-const rootRouter = withIntrospection(t, appRouter)
+const rootRouter = withIntrospection(t, appRouter, {
+  meta: { name: 'My API', description: 'User management service' },
+  exclude: ['admin.'],
+})
 ```
 
 This adds the root introspection endpoint plus path-prefix filters:
@@ -84,7 +93,7 @@ The `_introspect` query returns:
 Low-level function. Extracts endpoint info from a tRPC router directly.
 
 ```ts
-import {introspectRouter} from 'trpc-introspect'
+import { introspectRouter } from 'trpc-introspect'
 
 const endpoints = introspectRouter(appRouter)
 ```
