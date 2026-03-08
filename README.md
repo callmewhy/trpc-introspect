@@ -40,7 +40,10 @@ const appRouter = t.router({
 })
 
 const rootRouter = withIntrospection(t, appRouter, {
-  meta: { name: 'My API', description: 'User management service' },
+  meta: {
+    name: 'My API',
+    description: 'User management service.'
+  },
   exclude: ['admin.'],
 })
 ```
@@ -58,7 +61,8 @@ The `_introspect` query returns:
 
 ```json
 {
-  "description": "tRPC API with 2 queries, 1 mutations. Encoding: standard JSON. ...",
+  "name": "My API",
+  "description": "User management service. tRPC API with 2 queries, 1 mutations. Encoding: standard JSON.",
   "serializer": "json",
   "procedures": [
     {
