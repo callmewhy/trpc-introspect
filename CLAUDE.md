@@ -1,6 +1,6 @@
 # trpc-introspect
 
-tRPC router introspection SDK. Adds a query endpoint that lists all procedures with types and JSON Schema inputs.
+tRPC router introspection SDK. Adds a query endpoint that lists all procedures with types plus input and output schemas as JSON Schema.
 
 ## Tech Stack
 
@@ -17,14 +17,18 @@ tRPC router introspection SDK. Adds a query endpoint that lists all procedures w
 
 ## Key Design Decisions
 
-- No `@trpc/server` dependency. Uses duck-typed interfaces (`RouterLike`, `TRPCBuilderLike`) to accept tRPC objects without importing tRPC types.
+- `@trpc/server` is a peer dependency. Uses real tRPC types (`AnyTRPCRouter`, `TRPCRootObject`) for type safety.
 - Accesses tRPC internals (`router._def.procedures`, `procedure._def`) which are untyped. Using `any` here is intentional.
-- Input schemas are converted to JSON Schema via `z.toJSONSchema` with `unrepresentable: 'any'` to handle edge cases like `z.coerce.date()`.
+- Input and output schemas are converted to JSON Schema via `z.toJSONSchema` with `unrepresentable: 'any'`. Results are cached in a `WeakMap`.
+- `z.coerce.date()` is mapped to `{ type: "string", format: "date-time", deprecated: true }` via a custom `override`.
+- Introspection payload is precomputed at router creation time, not per-request.
 
 ## Exported API
 
 - `introspectRouter(router, options?)` - Low-level: extracts `EndpointInfo[]` from a router
-- `createIntrospectionRouter(t, appRouter, options?)` - High-level: returns a tRPC router with an introspection query procedure, to be used with `t.mergeRouters()`
+- `createIntrospectionRouter(t, appRouter, options?)` - Returns a tRPC router with an introspection query procedure, to be used with `t.mergeRouters()`
+- `withIntrospection(t, appRouter, options?)` - Convenience: merges the introspection router into the app router in one step
+- `addIntrospectionEndpoint(appRouter, options?)` - Builds a `t` instance from the router config and attaches the introspection endpoint without requiring `t`
 
 ## Commands
 
