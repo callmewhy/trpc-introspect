@@ -30,10 +30,14 @@ export function introspectRouter(
   router: AnyTRPCRouter,
   options: IntrospectOptions = {},
 ): EndpointInfo[] {
+  const includePrefixes = options.include ?? []
   const excludePrefixes = options.exclude ?? []
   const endpoints: EndpointInfo[] = []
 
   for (const [path, procedure] of Object.entries(router._def.procedures ?? {})) {
+    if (includePrefixes.length > 0 && !isIncludedPath(path, includePrefixes)) {
+      continue
+    }
     if (isExcludedPath(path, excludePrefixes)) {
       continue
     }
@@ -77,6 +81,10 @@ function getProcedureType(type: unknown) {
   }
 
   return type as TRPCProcedureType
+}
+
+function isIncludedPath(path: string, includePrefixes: readonly string[]) {
+  return includePrefixes.some(prefix => path.startsWith(prefix))
 }
 
 function isExcludedPath(path: string, excludePrefixes: readonly string[]) {

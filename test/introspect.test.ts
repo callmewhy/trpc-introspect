@@ -153,6 +153,67 @@ describe('introspectRouter', () => {
     expect(result[0]?.input?.type).toBe('object')
   })
 
+  it('includes only paths matching include prefixes', () => {
+    const router = mockRouter({
+      'admin.stats': mockProcedure({ type: 'query' }),
+      'chat.send': mockProcedure({ type: 'mutation' }),
+      'user.list': mockProcedure({ type: 'query' }),
+    })
+
+    const result = introspectRouter(router, {
+      include: ['user.'],
+    })
+
+    expect(result).toHaveLength(1)
+    expect(result[0]?.path).toBe('user.list')
+  })
+
+  it('includes multiple prefixes', () => {
+    const router = mockRouter({
+      'admin.stats': mockProcedure({ type: 'query' }),
+      'chat.send': mockProcedure({ type: 'mutation' }),
+      'user.list': mockProcedure({ type: 'query' }),
+    })
+
+    const result = introspectRouter(router, {
+      include: ['user.', 'chat.'],
+    })
+
+    expect(result).toHaveLength(2)
+    expect(result[0]?.path).toBe('chat.send')
+    expect(result[1]?.path).toBe('user.list')
+  })
+
+  it('applies both include and exclude filters', () => {
+    const router = mockRouter({
+      'user.list': mockProcedure({ type: 'query' }),
+      'user.create': mockProcedure({ type: 'mutation' }),
+      'user.delete': mockProcedure({ type: 'mutation' }),
+      'admin.stats': mockProcedure({ type: 'query' }),
+    })
+
+    const result = introspectRouter(router, {
+      include: ['user.'],
+      exclude: ['user.delete'],
+    })
+
+    expect(result).toHaveLength(2)
+    expect(result[0]?.path).toBe('user.list')
+    expect(result[1]?.path).toBe('user.create')
+  })
+
+  it('returns nothing when include is empty array', () => {
+    const router = mockRouter({
+      'user.list': mockProcedure({ type: 'query' }),
+    })
+
+    const result = introspectRouter(router, {
+      include: [],
+    })
+
+    expect(result).toHaveLength(1)
+  })
+
   it('excludes paths matching prefixes', () => {
     const router = mockRouter({
       'admin.stats': mockProcedure({ type: 'query' }),

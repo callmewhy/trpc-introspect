@@ -11,6 +11,7 @@ export interface EndpointInfo {
 }
 
 export interface IntrospectOptions {
+  include?: readonly string[]
   exclude?: readonly string[]
 }
 
