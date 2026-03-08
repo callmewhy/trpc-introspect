@@ -32,11 +32,14 @@ const appRouter = t.router({
 const rootRouter = withIntrospection(t, appRouter)
 ```
 
-This adds the root introspection endpoint plus namespace filters:
+This adds the root introspection endpoint plus path-prefix filters:
 
 - `_introspect` -- returns metadata plus all procedures with their input/output JSON Schemas
-- `_introspect.<namespace>` -- returns the same payload filtered by the first path segment
-  (for example `_introspect.user`)
+- `_introspect.<prefix>` -- returns the same payload filtered by any dot-separated path prefix
+  (for example `_introspect.user` or `_introspect.user.profile`)
+
+If you pass `meta.description`, it is appended after the generated description in every
+introspection response.
 
 The `_introspect` query returns:
 
@@ -99,6 +102,7 @@ already attached.
 |--------------|--------------|-----------------|---------------------------------------------------------------------|
 | `enabled`    | `boolean`    | `true`          | Disable the introspection endpoint entirely                         |
 | `exclude`    | `string[]`   | `[]`            | Path prefixes to exclude (e.g. `admin.`)                            |
+| `meta`       | `object`     | `undefined`     | Extra metadata to merge into the response; `meta.description` is appended after the generated description |
 | `path`       | `string`     | `'_introspect'` | Procedure path for the introspection query                          |
 | `serializer` | `Serializer` | auto-detected   | Override serializer detection (`'json'`, `'superjson'`, `'custom'`) |
 
@@ -120,15 +124,15 @@ The root response shape is:
 
 | Field         | Type                                | Description                                 |
 |---------------|-------------------------------------|---------------------------------------------|
-| `description` | `string`                            | Human-readable calling hints for the router |
+| `description` | `string`                            | Human-readable calling hints for the router, optionally followed by `meta.description` |
 | `serializer`  | `'json' \| 'superjson' \| 'custom'` | Detected or overridden serializer           |
-| `pathFilter`  | `string \| undefined`               | Present on namespace-filtered sub-routes    |
+| `pathFilter`  | `string \| undefined`               | Present on prefix-filtered sub-routes       |
 | `procedures`  | `EndpointInfo[]`                    | Introspected procedures                     |
 
 ## Example
 
 ```bash
-pnpm example
+pnpm dev
 # Server running on http://localhost:3000
 # curl http://localhost:3000/_introspect
 ```
@@ -141,6 +145,7 @@ See [example/server.ts](./example/server.ts) for a full example with queries and
 ## Development
 
 ```bash
+pnpm dev       # run the example server in watch mode
 pnpm test      # run tests
 pnpm build     # build dist
 pnpm lint      # lint
