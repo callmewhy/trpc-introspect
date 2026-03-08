@@ -22,11 +22,11 @@
     "dist/**"
   ],
   "scripts": {
+    "dev": "tsx watch example/server.ts",
     "build": "tsc --noEmit && tsdown",
     "clean": "rm -rf dist",
     "lint": "eslint \"src/**/*.ts\" --fix --max-warnings 0",
-    "test": "vitest run",
-    "example": "tsx example/server.ts"
+    "test": "vitest run"
   },
   "peerDependencies": {
     "@trpc/server": ">=11",

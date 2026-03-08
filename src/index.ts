@@ -8,6 +8,7 @@ export {
 } from './router'
 export type {
   EndpointInfo,
+  IntrospectionResult,
   IntrospectionRouterOptions,
   IntrospectOptions,
   Serializer,

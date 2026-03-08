@@ -7,11 +7,31 @@ export function mockRouter(procedures: Record<string, unknown>) {
 }
 
 export function mockT() {
+  const flattenRouter = (defs: Record<string, unknown>): Record<string, unknown> => {
+    const flat: Record<string, unknown> = {}
+    for (const [key, value] of Object.entries(defs)) {
+      if (value && typeof value === 'object' && '_def' in value && 'procedures' in (value as any)._def) {
+        const nested = (value as { _def: { procedures: Record<string, unknown> } })._def.procedures
+        for (const [nk, nv] of Object.entries(nested)) {
+          flat[`${key}.${nk}`] = nv
+        }
+      } else {
+        flat[key] = value
+      }
+    }
+    return flat
+  }
+
   return {
     procedure: {
       query: (resolver: () => unknown) => ({ _type: 'query', resolver, _def: { resolver } }),
     },
-    router: (procedures: Record<string, unknown>) => ({ _def: { procedures } }),
+    router: (defs: Record<string, unknown>) => ({ _def: { procedures: flattenRouter(defs) } }),
+    mergeRouters: (...routers: Array<{ _def: { procedures: Record<string, unknown> } }>) => ({
+      _def: {
+        procedures: Object.assign({}, ...routers.map(r => r._def.procedures)),
+      },
+    }),
   } as any
 }
 /* eslint-enable ts/no-explicit-any */

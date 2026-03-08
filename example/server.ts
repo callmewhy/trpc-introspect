@@ -7,7 +7,7 @@ import { withIntrospection } from '../src'
 const t = initTRPC.create()
 
 // In-memory data store
-const users: { id: number; name: string; email: string }[] = [
+const users: { id: number, name: string, email: string }[] = [
   { id: 1, name: 'Alice', email: 'alice@example.com' },
   { id: 2, name: 'Bob', email: 'bob@example.com' },
 ]
@@ -22,7 +22,8 @@ const appRouter = t.router({
       .input(z.object({ id: z.number() }))
       .query(({ input }) => {
         const user = users.find(u => u.id === input.id)
-        if (!user) throw new Error('User not found')
+        if (!user)
+          throw new Error('User not found')
         return user
       }),
 
@@ -42,9 +43,12 @@ const appRouter = t.router({
       }))
       .mutation(({ input }) => {
         const user = users.find(u => u.id === input.id)
-        if (!user) throw new Error('User not found')
-        if (input.name) user.name = input.name
-        if (input.email) user.email = input.email
+        if (!user)
+          throw new Error('User not found')
+        if (input.name)
+          user.name = input.name
+        if (input.email)
+          user.email = input.email
         return user
       }),
 
@@ -52,7 +56,8 @@ const appRouter = t.router({
       .input(z.object({ id: z.number() }))
       .mutation(({ input }) => {
         const idx = users.findIndex(u => u.id === input.id)
-        if (idx === -1) throw new Error('User not found')
+        if (idx === -1)
+          throw new Error('User not found')
         return users.splice(idx, 1)[0]
       }),
   }),
@@ -62,7 +67,9 @@ const appRouter = t.router({
   }),
 })
 
-const rootRouter = withIntrospection(t, appRouter)
+const rootRouter = withIntrospection(t, appRouter, {
+  meta: { name: 'Example API' },
+})
 
 const server = createHTTPServer({ router: rootRouter })
 server.listen(3000)

@@ -16,8 +16,17 @@ export interface IntrospectOptions {
 
 export type Serializer = 'json' | 'superjson' | 'custom'
 
+export interface IntrospectionResult {
+  name?: string
+  description: string
+  serializer: Serializer
+  procedures: EndpointInfo[]
+  [key: string]: unknown
+}
+
 export interface IntrospectionRouterOptions extends IntrospectOptions {
   enabled?: boolean
   path?: string
   serializer?: Serializer
+  meta?: Record<string, unknown>
 }

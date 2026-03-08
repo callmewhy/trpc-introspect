@@ -2,11 +2,12 @@ import { initTRPC } from '@trpc/server'
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
+import type { IntrospectionResult } from '../src'
 import { addIntrospectionEndpoint, createIntrospectionRouter, withIntrospection } from '../src'
 import { getResolver, mockProcedure, mockRouter, mockT } from './helpers'
 
 describe('createIntrospectionRouter', () => {
-  it('creates a router with _introspect and _introspect/skill.md procedures', () => {
+  it('creates a router with _introspect procedure', () => {
     const appRouter = mockRouter({
       'user.list': mockProcedure({
         type: 'query',
@@ -17,25 +18,20 @@ describe('createIntrospectionRouter', () => {
     const result = createIntrospectionRouter(mockT(), appRouter)
 
     expect(result._def.procedures).toHaveProperty('_introspect')
-    expect(result._def.procedures).toHaveProperty('_introspect/skill.md')
 
-    const endpoints = getResolver(result, '_introspect')() as Array<{ path: string; output?: Record<string, unknown> }>
-    expect(endpoints).toHaveLength(1)
-    expect(endpoints[0]).toEqual(
+    const data = getResolver(result, '_introspect')() as IntrospectionResult
+    expect(data.serializer).toBe('json')
+    expect(data.procedures).toHaveLength(1)
+    expect(data.procedures[0]).toEqual(
       expect.objectContaining({ path: 'user.list', type: 'query' }),
     )
-    expect((endpoints[0]?.output?.items as { type: string }).type).toBe('string')
-
-    const skillText = getResolver(result, '_introspect/skill.md')() as string
-    expect(skillText).toContain('tRPC API Interaction Skill')
-    expect(skillText).toContain('plain JSON')
+    expect((data.procedures[0]?.output?.items as { type: string }).type).toBe('string')
   })
 
   it('uses custom path', () => {
     const result = createIntrospectionRouter(mockT(), mockRouter({}), { path: 'schema' })
 
     expect(result._def.procedures).toHaveProperty('schema')
-    expect(result._def.procedures).toHaveProperty('schema/skill.md')
     expect(result._def.procedures).not.toHaveProperty('_introspect')
   })
 
@@ -47,9 +43,9 @@ describe('createIntrospectionRouter', () => {
 
     const result = createIntrospectionRouter(mockT(), appRouter, { exclude: ['admin.'] })
 
-    const endpoints = getResolver(result, '_introspect')() as { path: string }[]
-    expect(endpoints).toHaveLength(1)
-    expect(endpoints[0]?.path).toBe('user.list')
+    const data = getResolver(result, '_introspect')() as IntrospectionResult
+    expect(data.procedures).toHaveLength(1)
+    expect(data.procedures[0]?.path).toBe('user.list')
   })
 
   it('precomputes the introspection payload once during router creation', () => {
@@ -76,6 +72,28 @@ describe('createIntrospectionRouter', () => {
     expect(inputAccessCount).toBe(1)
   })
 
+  it('creates namespace sub-routes for each top-level namespace', () => {
+    const appRouter = mockRouter({
+      'user.list': mockProcedure({ type: 'query' }),
+      'user.create': mockProcedure({ type: 'mutation' }),
+      'health.check': mockProcedure({ type: 'query' }),
+    })
+
+    const result = createIntrospectionRouter(mockT(), appRouter)
+
+    expect(result._def.procedures).toHaveProperty('_introspect')
+    expect(result._def.procedures).toHaveProperty('_introspect.user')
+    expect(result._def.procedures).toHaveProperty('_introspect.health')
+
+    const userData = getResolver(result, '_introspect.user')() as IntrospectionResult
+    expect(userData.procedures).toHaveLength(2)
+    expect(userData.procedures.map(p => p.path)).toEqual(['user.list', 'user.create'])
+
+    const healthData = getResolver(result, '_introspect.health')() as IntrospectionResult
+    expect(healthData.procedures).toHaveLength(1)
+    expect(healthData.procedures[0]?.path).toBe('health.check')
+  })
+
   it('returns an empty router when disabled', () => {
     const appRouter = mockRouter({
       'user.list': mockProcedure({ type: 'query' }),
@@ -92,22 +110,12 @@ describe('withIntrospection', () => {
     const appRouter = mockRouter({
       'user.list': mockProcedure({ type: 'query' }),
     })
-    const t = {
-      ...mockT(),
-      mergeRouters: (
-        ...routers: Array<{ _def: { procedures: Record<string, unknown> } }>
-      ) => ({
-        _def: {
-          procedures: Object.assign({}, ...routers.map(router => router._def.procedures)),
-        },
-      }),
-    }
+    const t = mockT()
 
     const result = withIntrospection(t, appRouter)
 
     expect(result._def.procedures).toHaveProperty('user.list')
     expect(result._def.procedures).toHaveProperty('_introspect')
-    expect(result._def.procedures).toHaveProperty('_introspect/skill.md')
   })
 })
 
@@ -121,15 +129,12 @@ describe('addIntrospectionEndpoint', () => {
     })
 
     const result = addIntrospectionEndpoint(appRouter)
-    const endpoints = getResolver(result, '_introspect')() as Array<{
-      path: string
-      output?: Record<string, unknown>
-    }>
+    const data = getResolver(result, '_introspect')() as IntrospectionResult
 
     expect(result._def.procedures).toHaveProperty('_introspect')
-    expect(result._def.procedures).toHaveProperty('_introspect/skill.md')
-    expect(endpoints).toHaveLength(1)
-    expect(endpoints[0]?.path).toBe('userList')
-    expect((endpoints[0]?.output?.items as { type: string }).type).toBe('string')
+    expect(data.serializer).toBe('json')
+    expect(data.procedures).toHaveLength(1)
+    expect(data.procedures[0]?.path).toBe('userList')
+    expect((data.procedures[0]?.output?.items as { type: string }).type).toBe('string')
   })
 })
