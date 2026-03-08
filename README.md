@@ -101,6 +101,7 @@ already attached.
 | Option       | Type         | Default         | Description                                                                                               |
 |--------------|--------------|-----------------|-----------------------------------------------------------------------------------------------------------|
 | `enabled`    | `boolean`    | `true`          | Disable the introspection endpoint entirely                                                               |
+| `include`    | `string[]`   | `[]`            | Path prefixes to include (only matching paths are returned; empty means include all)                      |
 | `exclude`    | `string[]`   | `[]`            | Path prefixes to exclude (e.g. `admin.`)                                                                  |
 | `meta`       | `object`     | `undefined`     | Extra metadata to merge into the response; `meta.description` is appended after the generated description |
 | `path`       | `string`     | `'_introspect'` | Procedure path for the introspection query                                                                |
@@ -153,6 +154,7 @@ pnpm lint      # lint
 
 ## Changelog
 
+- 0.2.0: Add `include` option to filter introspection to specific path prefixes.
 - 0.1.0: Initial release with core functionality and example server.
 
 ## License
