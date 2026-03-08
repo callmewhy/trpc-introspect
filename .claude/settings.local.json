@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__ide__getDiagnostics",
+      "WebSearch",
+      "Bash(*)",
+      "Edit(*)",
+      "Write(*)",
+      "Read(*)",
+      "WebFetch(*)"
+    ]
+  }
+}
