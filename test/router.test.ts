@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
 
 import type { IntrospectionResult } from '../src'
-import { addIntrospectionEndpoint, createIntrospectionRouter, withIntrospection } from '../src'
+import { createIntrospectionRouter, withIntrospection } from '../src'
 import { getResolver, mockRouter } from './helpers'
 
 const duplicateIntrospectionPathError = /Duplicate key _introspect/
@@ -237,22 +237,3 @@ describe('withIntrospection', () => {
   })
 })
 
-describe('addIntrospectionEndpoint', () => {
-  it('adds an introspection endpoint without introspecting itself', () => {
-    const t = initTRPC.create()
-    const appRouter = t.router({
-      userList: t.procedure
-        .output(z.array(z.string()))
-        .query(() => ['alice', 'bob']),
-    })
-
-    const result = addIntrospectionEndpoint(appRouter)
-    const data = getResolver(result, '_introspect')() as IntrospectionResult
-
-    expect(result._def.procedures).toHaveProperty('_introspect')
-    expect(data.serializer).toBe('json')
-    expect(data.procedures).toHaveLength(1)
-    expect(data.procedures[0]?.path).toBe('userList')
-    expect((data.procedures[0]?.output?.items as { type: string }).type).toBe('string')
-  })
-})

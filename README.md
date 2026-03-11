@@ -110,11 +110,6 @@ Creates a tRPC router with an introspection query, ready to merge.
 
 Merges the introspection router into an existing router.
 
-### `addIntrospectionEndpoint(appRouter, options?)`
-
-Builds a compatible `t` instance from the router config and returns a router with `_introspect`
-already attached.
-
 ### Options
 
 | Option       | Type         | Default         | Description                                                                                               |

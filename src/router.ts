@@ -1,11 +1,9 @@
 import type { AnyTRPCRouter, TRPCRootObject } from '@trpc/server'
-import { initTRPC } from '@trpc/server'
 
 import { introspectRouter } from './introspect'
 import { detectSerializer } from './serializer'
 import type { EndpointInfo, IntrospectionResult, IntrospectionRouterOptions, Serializer } from './types'
 
-type InitTRPCOptions = Parameters<typeof initTRPC.create>[0]
 /* eslint-disable ts/no-explicit-any */
 type AnyTRPCRoot = TRPCRootObject<any, any, any, any>
 /* eslint-enable ts/no-explicit-any */
@@ -133,21 +131,5 @@ export function withIntrospection<TRouter extends AnyTRPCRouter>(
   return t.mergeRouters(
     appRouter,
     createIntrospectionRouter(t, appRouter, options),
-  )
-}
-
-export function addIntrospectionEndpoint<TRouter extends AnyTRPCRouter>(
-  router: TRouter,
-  options: IntrospectionRouterOptions = {},
-) {
-  if (options.enabled === false) {
-    return router
-  }
-
-  const runtimeConfig = { ...(router._def._config as InitTRPCOptions & { $types?: unknown }) }
-  delete runtimeConfig.$types
-
-  const t = initTRPC.create(runtimeConfig)
-
-  return withIntrospection(t, router, options)
+  ) as TRouter
 }

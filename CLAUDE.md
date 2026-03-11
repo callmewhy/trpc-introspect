@@ -28,7 +28,6 @@ tRPC router introspection SDK. Adds a query endpoint that lists all procedures w
 - `introspectRouter(router, options?)` - Low-level: extracts `EndpointInfo[]` from a router
 - `createIntrospectionRouter(t, appRouter, options?)` - Returns a tRPC router with an introspection query procedure, to be used with `t.mergeRouters()`
 - `withIntrospection(t, appRouter, options?)` - Convenience: merges the introspection router into the app router in one step
-- `addIntrospectionEndpoint(appRouter, options?)` - Builds a `t` instance from the router config and attaches the introspection endpoint without requiring `t`
 
 ## Commands
 

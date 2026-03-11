@@ -2,7 +2,6 @@ export {
   introspectRouter,
 } from './introspect'
 export {
-  addIntrospectionEndpoint,
   createIntrospectionRouter,
   withIntrospection,
 } from './router'
