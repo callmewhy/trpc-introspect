@@ -3,7 +3,7 @@ import process from 'node:process'
 
 import { callProcedure, fetchIntrospection } from './client'
 
-const HELP = `Usage: trpc <base-url> [procedure] [input]
+const HELP = `Usage: trpc-introspect <base-url> [procedure] [input]
 
 Discover and call tRPC procedures.
 
@@ -21,11 +21,11 @@ Options:
   -h, --help                Show this help message
 
 Examples:
-  trpc http://localhost:3000
-  trpc http://localhost:3000 user.list
-  trpc http://localhost:3000 user.getById '{"id":1}'
-  trpc http://localhost:3000 user.create '{"name":"Alice"}' --mutation
-  trpc http://localhost:3000 -t superjson`
+  trpc-introspect http://localhost:3000
+  trpc-introspect http://localhost:3000 user.list
+  trpc-introspect http://localhost:3000 user.getById '{"id":1}'
+  trpc-introspect http://localhost:3000 user.create '{"name":"Alice"}' --mutation
+  trpc-introspect http://localhost:3000 -t superjson`
 
 interface ParsedArgs {
   baseUrl: string | undefined

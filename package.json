@@ -1,10 +1,12 @@
 {
   "name": "trpc-introspect",
   "version": "0.4.0",
+  "description": "tRPC router introspection and CLI client. Discover procedures, input/output schemas, and call queries/mutations.",
+  "license": "MIT",
   "type": "module",
   "sideEffects": false,
   "bin": {
-    "trpc": "./dist/cli.mjs"
+    "trpc-introspect": "./dist/cli.mjs"
   },
   "exports": {
     ".": {
@@ -45,6 +47,10 @@
   "peerDependencies": {
     "@trpc/server": ">=11",
     "zod": ">=4"
+  },
+  "peerDependenciesMeta": {
+    "@trpc/server": { "optional": true },
+    "zod": { "optional": true }
   },
   "devDependencies": {
     "@trpc/server": "^11.12.0",
