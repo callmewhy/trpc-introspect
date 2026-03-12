@@ -217,6 +217,7 @@ pnpm lint      # lint
 
 ## Changelog
 
+- 0.5.3: Add testing documentation with AI agent testing instructions.
 - 0.5.2: Fix `callProcedure` to forward headers to `fetchIntrospection` for authenticated APIs.
   Add validation for invalid introspection responses.
 - 0.5.0: Add client module (`trpc-introspect/client`) with `fetchIntrospection` and `callProcedure`
