@@ -17,10 +17,10 @@ Options:
   -h, --help                Show this help message
 
 Examples:
-  trpc-introspect http://localhost:3000/trpc
-  trpc-introspect http://localhost:3000/trpc user.list
-  trpc-introspect http://localhost:3000/trpc user.getById '{"id":1}'
-  trpc-introspect http://localhost:3000/trpc user.create '{"name":"Alice"}'`
+  trpc-introspect <base-url>
+  trpc-introspect <base-url> user.list
+  trpc-introspect <base-url> user.getById '{"id":1}'
+  trpc-introspect <base-url> user.create '{"name":"Alice"}'`
 
 interface ParsedArgs {
   baseUrl: string | undefined
