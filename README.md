@@ -148,7 +148,6 @@ The root response shape is:
 | `pathFilter`  | `string \| undefined`               | Present on prefix-filtered sub-routes                                                  |
 | `procedures`  | `EndpointInfo[]`                    | Introspected procedures                                                                |
 
-
 ## CLI
 
 The package includes a CLI for discovering and calling tRPC procedures from the terminal.
@@ -186,11 +185,32 @@ regenerate schemas on every request.
 
 See [example/server.ts](./example/server.ts) for a full example with queries and mutations.
 
+## Testing
+
+### Unit Tests
+
+```bash
+pnpm test      # run all tests
+```
+
+### Testing with an AI Agent
+
+Start the example server, then give your AI agent the introspection
+endpoint URL and ask it to test everything.
+
+**Prompt:**
+
+> http://localhost:3000/_introspect
+>
+> Try all endpoints and ensure it's bug free. Test every procedure listed in the introspection
+> response, including happy paths, error cases (missing input, invalid types, unauthorized access),
+> and all introspection prefix filters.
+
+
 ## Development
 
 ```bash
 pnpm dev       # run the example server in watch mode
-pnpm test      # run tests
 pnpm build     # build dist
 pnpm lint      # lint
 ```
