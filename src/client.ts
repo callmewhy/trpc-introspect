@@ -68,6 +68,7 @@ export async function fetchIntrospection(
  *
  * @param baseUrl - Base URL of the tRPC server, e.g. `http://localhost:3000`
  * @param procedure - Procedure path, e.g. `'user.getById'`
+ * @param options - Optional input, type override, transformer, headers, or pre-fetched introspection
  */
 export async function callProcedure(
   baseUrl: string,
