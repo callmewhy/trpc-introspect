@@ -156,13 +156,13 @@ The package includes a CLI for discovering and calling tRPC procedures from the 
 # Install globally
 npm install -g trpc-introspect
 
-# List all procedures
+# List all procedures (always start here)
 trpc-introspect <base-url>
 
-# Call a query
-trpc-introspect <base-url> user.list
+# Filter by prefix
+trpc-introspect <base-url> user
 
-# Call with input
+# Call a query
 trpc-introspect <base-url> user.getById '{"id":1}'
 
 # Call a mutation
@@ -171,6 +171,8 @@ trpc-introspect <base-url> user.create '{"name":"Alice"}'
 # Custom headers
 trpc-introspect <base-url> -H "Authorization:Bearer token123"
 ```
+
+Always run without a procedure argument first to list all available procedures and their input schemas. Use the introspection output to determine the correct procedure names and input shapes.
 
 ## Example
 
@@ -217,6 +219,8 @@ pnpm lint      # lint
 
 ## Changelog
 
+- 0.5.4: CLI prefix filtering (e.g., `trpc-introspect <url> user` lists only `user.*`), procedure
+  validation with helpful errors, and fix SuperJSON detection for envelopes without `meta`.
 - 0.5.3: Add testing documentation with AI agent testing instructions.
 - 0.5.2: Fix `callProcedure` to forward headers to `fetchIntrospection` for authenticated APIs.
   Add validation for invalid introspection responses.
