@@ -158,19 +158,19 @@ The package includes a CLI for discovering and calling tRPC procedures from the 
 npm install -g trpc-introspect
 
 # List all procedures
-trpc-introspect http://localhost:3000/trpc
+trpc-introspect <base-url>
 
 # Call a query
-trpc-introspect http://localhost:3000/trpc user.list
+trpc-introspect <base-url> user.list
 
 # Call with input
-trpc-introspect http://localhost:3000/trpc user.getById '{"id":1}'
+trpc-introspect <base-url> user.getById '{"id":1}'
 
 # Call a mutation
-trpc-introspect http://localhost:3000/trpc user.create '{"name":"Alice"}'
+trpc-introspect <base-url> user.create '{"name":"Alice"}'
 
 # Custom headers
-trpc-introspect http://localhost:3000/trpc -H "Authorization:Bearer token123"
+trpc-introspect <base-url> -H "Authorization:Bearer token123"
 ```
 
 ## Example
@@ -197,6 +197,8 @@ pnpm lint      # lint
 
 ## Changelog
 
+- 0.5.2: Fix `callProcedure` to forward headers to `fetchIntrospection` for authenticated APIs.
+  Add validation for invalid introspection responses.
 - 0.5.0: Add client module (`trpc-introspect/client`) with `fetchIntrospection` and `callProcedure`
   for calling tRPC procedures from any JS runtime. Add CLI (`trpc-introspect`) for discovering and
   invoking procedures from the terminal.
