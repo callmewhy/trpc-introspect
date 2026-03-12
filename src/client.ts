@@ -80,7 +80,10 @@ export async function callProcedure(
 
   // Auto-detect type and transformer from introspection
   if (!type || !transformer) {
-    const introspection = options.introspection ?? await fetchIntrospection(baseUrl)
+    const introspection = options.introspection ?? await fetchIntrospection(baseUrl, { headers })
+    if (!introspection?.procedures) {
+      throw new Error('Invalid introspection response: missing "procedures" field')
+    }
     const proc = introspection.procedures.find(p => p.path === procedure)
     if (!proc) {
       const available = introspection.procedures.map(p => p.path).join(', ')

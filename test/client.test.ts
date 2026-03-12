@@ -1,59 +1,54 @@
 import type { Server } from 'node:http'
 
-import { initTRPC } from '@trpc/server'
+import { TRPCError } from '@trpc/server'
 import { createHTTPServer } from '@trpc/server/adapters/standalone'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { z } from 'zod'
 
-import { withIntrospection } from '../src'
+import type { Context } from '../example/context'
+import { createContext } from '../example/context'
+import { exampleRouter } from '../example/router'
 import { callProcedure, fetchIntrospection } from '../src/client'
 
 let server: Server
 let baseUrl: string
 
+let authServer: Server
+let authBaseUrl: string
+
+const AUTH_HEADERS = { Authorization: 'Bearer test-token' }
+
 beforeAll(async () => {
-  const t = initTRPC.create()
-
-  const appRouter = t.router({
-    user: t.router({
-      list: t.procedure
-        .output(z.array(z.object({ id: z.number(), name: z.string() })))
-        .query(() => [{ id: 1, name: 'Alice' }]),
-      getById: t.procedure
-        .input(z.object({ id: z.number() }))
-        .query(({ input }) => {
-          const user = [{ id: 1, name: 'Alice' }].find(u => u.id === input.id)
-          if (!user) throw new Error('Not found')
-          return user
-        }),
-      create: t.procedure
-        .input(z.object({ name: z.string() }))
-        .mutation(({ input }) => ({ id: 2, name: input.name })),
-    }),
-    health: t.router({
-      check: t.procedure.query(() => ({ status: 'ok' })),
-    }),
-  })
-
-  const rootRouter = withIntrospection(t, appRouter, {
-    meta: { name: 'Client Test API' },
-  })
-
-  server = createHTTPServer({ router: rootRouter }).listen(0)
+  // Normal server: public queries, protected mutations
+  server = createHTTPServer({ router: exampleRouter, createContext }).listen(0)
   const addr = server.address()
   const port = typeof addr === 'object' && addr ? addr.port : 0
   baseUrl = `http://localhost:${port}`
+
+  // Strict auth server: ALL endpoints require auth (simulates server behind auth proxy)
+  authServer = createHTTPServer({
+    router: exampleRouter,
+    createContext: ({ req }): Context => {
+      const auth = req.headers.authorization
+      if (!auth?.startsWith('Bearer '))
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Missing authorization' })
+      return { token: auth.slice(7) }
+    },
+  }).listen(0)
+  const authAddr = authServer.address()
+  const authPort = typeof authAddr === 'object' && authAddr ? authAddr.port : 0
+  authBaseUrl = `http://localhost:${authPort}`
 })
 
 afterAll(() => {
   server?.close()
+  authServer?.close()
 })
 
 describe('fetchIntrospection', () => {
   it('fetches full introspection from base URL', async () => {
     const result = await fetchIntrospection(baseUrl)
 
-    expect(result.name).toBe('Client Test API')
+    expect(result.name).toBe('Example API')
     expect(result.serializer).toBe('json')
 
     const paths = result.procedures.map(p => p.path)
@@ -72,31 +67,41 @@ describe('fetchIntrospection', () => {
   })
 
   it('passes custom headers', async () => {
-    const result = await fetchIntrospection(baseUrl, {
-      headers: { 'X-Custom': 'test' },
-    })
+    const result = await fetchIntrospection(baseUrl, { headers: AUTH_HEADERS })
     expect(result.procedures.length).toBeGreaterThan(0)
   })
 })
 
 describe('callProcedure', () => {
-  it('calls a query with no input (auto-detects type)', async () => {
+  it('calls a public query (auto-detects type)', async () => {
     const result = await callProcedure(baseUrl, 'user.list')
-    expect(result).toEqual([{ id: 1, name: 'Alice' }])
+    expect(result).toEqual([
+      { id: 1, name: 'Alice', email: 'alice@example.com' },
+      { id: 2, name: 'Bob', email: 'bob@example.com' },
+    ])
   })
 
   it('calls a query with input', async () => {
     const result = await callProcedure(baseUrl, 'user.getById', {
       input: { id: 1 },
     })
-    expect(result).toEqual({ id: 1, name: 'Alice' })
+    expect(result).toEqual({ id: 1, name: 'Alice', email: 'alice@example.com' })
   })
 
-  it('calls a mutation (auto-detects type)', async () => {
+  it('calls a protected mutation with auth', async () => {
     const result = await callProcedure(baseUrl, 'user.create', {
-      input: { name: 'Bob' },
+      input: { name: 'Charlie', email: 'charlie@example.com' },
+      headers: AUTH_HEADERS,
     })
-    expect(result).toEqual({ id: 2, name: 'Bob' })
+    expect(result).toEqual({ id: 3, name: 'Charlie', email: 'charlie@example.com' })
+  })
+
+  it('fails calling a protected mutation without auth', async () => {
+    await expect(
+      callProcedure(baseUrl, 'user.create', {
+        input: { name: 'Nobody', email: 'nobody@example.com' },
+      }),
+    ).rejects.toThrow()
   })
 
   it('calls with explicit type to skip introspection', async () => {
@@ -104,13 +109,13 @@ describe('callProcedure', () => {
       type: 'query',
       transformer: 'json',
     })
-    expect(result).toEqual({ status: 'ok' })
+    expect(result).toEqual(expect.objectContaining({ status: 'ok' }))
   })
 
   it('accepts pre-fetched introspection to avoid extra round-trip', async () => {
     const introspection = await fetchIntrospection(baseUrl)
     const result = await callProcedure(baseUrl, 'user.list', { introspection })
-    expect(result).toEqual([{ id: 1, name: 'Alice' }])
+    expect(result).toBeInstanceOf(Array)
   })
 
   it('throws on unknown procedure', async () => {
@@ -127,6 +132,28 @@ describe('callProcedure', () => {
         deserialize: v => v,
       },
     })
-    expect(result).toEqual({ status: 'ok' })
+    expect(result).toEqual(expect.objectContaining({ status: 'ok' }))
+  })
+
+  it('forwards headers to introspection request on auth-gated server', async () => {
+    const result = await callProcedure(authBaseUrl, 'user.list', {
+      headers: AUTH_HEADERS,
+    })
+    expect(result).toBeInstanceOf(Array)
+  })
+
+  it('fails without auth on auth-gated server', async () => {
+    await expect(
+      callProcedure(authBaseUrl, 'user.list'),
+    ).rejects.toThrow()
+  })
+
+  it('throws on invalid introspection response', async () => {
+    await expect(
+      callProcedure(baseUrl, 'user.list', {
+        // @ts-expect-error testing invalid introspection
+        introspection: {},
+      }),
+    ).rejects.toThrow('Invalid introspection response: missing "procedures" field')
   })
 })

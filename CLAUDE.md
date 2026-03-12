@@ -32,8 +32,9 @@ tRPC router introspection SDK. Adds a query endpoint that lists all procedures w
 ## Commands
 
 ```bash
+pnpm dev        # tsx example/server.ts (starts on port 3000)
 pnpm test       # vitest run
 pnpm build      # tsdown
 pnpm lint       # eslint
-pnpm example    # tsx example/server.ts (starts on port 3000)
+pnpm lint:fix   # eslint --fix
 ```
