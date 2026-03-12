@@ -144,41 +144,6 @@ The root response shape is:
 | `pathFilter`  | `string \| undefined`               | Present on prefix-filtered sub-routes                                                  |
 | `procedures`  | `EndpointInfo[]`                    | Introspected procedures                                                                |
 
-## Client
-
-A lightweight client for fetching introspection data and calling procedures from any environment (
-Node.js, browsers, edge runtimes). No tRPC dependencies required.
-
-```ts
-import {fetchIntrospection, callProcedure} from 'trpc-introspect/client'
-
-// Discover all procedures
-const result = await fetchIntrospection('http://localhost:3000')
-
-// Call a procedure (type and transformer are auto-detected via introspection)
-const users = await callProcedure('http://localhost:3000', 'user.list')
-const user = await callProcedure('http://localhost:3000', 'user.create', {
-  input: {name: 'Alice'},
-})
-```
-
-### `fetchIntrospection(baseUrl, options?)`
-
-| Option    | Type                     | Default         | Description                        |
-|-----------|--------------------------|-----------------|------------------------------------|
-| `path`    | `string`                 | `'_introspect'` | Introspection endpoint path        |
-| `filter`  | `string`                 | `undefined`     | Path prefix filter (e.g. `'user'`) |
-| `headers` | `Record<string, string>` | `undefined`     | Custom fetch headers               |
-
-### `callProcedure(baseUrl, procedure, options?)`
-
-| Option          | Type                                       | Default     | Description                                                  |
-|-----------------|--------------------------------------------|-------------|--------------------------------------------------------------|
-| `type`          | `'query' \| 'mutation'`                    | auto-detect | Procedure type (auto-detected from introspection if omitted) |
-| `input`         | `unknown`                                  | `undefined` | Input data to send                                           |
-| `transformer`   | `'json' \| 'superjson' \| TransformerLike` | auto-detect | Wire format (auto-detected from introspection if omitted)    |
-| `headers`       | `Record<string, string>`                   | `undefined` | Custom fetch headers                                         |
-| `introspection` | `IntrospectionResult`                      | `undefined` | Pre-fetched introspection result to skip an extra round-trip |
 
 ## CLI
 
