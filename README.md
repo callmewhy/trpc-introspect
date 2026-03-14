@@ -162,6 +162,9 @@ trpc-introspect <base-url>
 # Filter by prefix
 trpc-introspect <base-url> user
 
+# Filter by multiple prefixes
+trpc-introspect <base-url> user,post
+
 # Call a query
 trpc-introspect <base-url> user.getById '{"id":1}'
 
@@ -170,7 +173,13 @@ trpc-introspect <base-url> user.create '{"name":"Alice"}'
 
 # Custom headers
 trpc-introspect <base-url> -H "Authorization:Bearer token123"
+
+# Force summary or full JSON output
+trpc-introspect <base-url> --summary
+trpc-introspect <base-url> --full
 ```
+
+When listing procedures, the CLI auto-selects a summary format for routers with more than 10 procedures. Use `--summary` or `--full` to override.
 
 Always run without a procedure argument first to list all available procedures and their input schemas. Use the introspection output to determine the correct procedure names and input shapes.
 
@@ -219,6 +228,9 @@ pnpm lint      # lint
 
 ## Changelog
 
+- 0.6.0: Add `--summary` and `--full` CLI flags for output format control. Auto-summary for large
+  routers (>10 procedures). Support comma-separated multi-prefix filtering (e.g., `user,post`).
+  Refactor CLI internals to modular `src/cli/` directory.
 - 0.5.4: CLI prefix filtering (e.g., `trpc-introspect <url> user` lists only `user.*`), procedure
   validation with helpful errors, and fix SuperJSON detection for envelopes without `meta`.
 - 0.5.3: Add testing documentation with AI agent testing instructions.
