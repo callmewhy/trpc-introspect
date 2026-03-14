@@ -35,7 +35,8 @@ async function main() {
       }
       if (!filtered.procedures.length) {
         const available = introspection.procedures.map(p => p.path).join(', ')
-        throw new Error(`No procedures match "${args.procedure}". Available: ${available}`)
+        console.error(`Error: No procedures match "${args.procedure}". Available: ${available}`)
+        process.exit(1)
       }
       outputIntrospection(filtered)
       return
@@ -51,7 +52,8 @@ async function main() {
         return
       }
       const available = introspection.procedures?.map(p => p.path).join(', ') ?? '(none)'
-      throw new Error(`Procedure "${args.procedure}" not found. Available: ${available}`)
+      console.error(`Error: Procedure "${args.procedure}" not found. Available: ${available}`)
+      process.exit(1)
     }
 
     // Exact match: call the procedure
