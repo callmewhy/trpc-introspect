@@ -3,4 +3,5 @@ export interface ParsedArgs {
   procedure: string | undefined
   input: string | undefined
   headers: Record<string, string>
+  format: 'summary' | 'full' | undefined
 }

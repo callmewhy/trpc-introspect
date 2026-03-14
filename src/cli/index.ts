@@ -20,7 +20,7 @@ async function main() {
     const introspection = await fetchIntrospection(args.baseUrl, { headers })
 
     if (!args.procedure) {
-      outputIntrospection(introspection)
+      outputIntrospection(introspection, args)
       return
     }
 
@@ -38,7 +38,7 @@ async function main() {
         console.error(`Error: No procedures match "${args.procedure}". Available: ${available}`)
         process.exit(1)
       }
-      outputIntrospection(filtered)
+      outputIntrospection(filtered, args)
       return
     }
 
@@ -48,7 +48,7 @@ async function main() {
       // Try as prefix filter
       const filtered = await fetchIntrospection(args.baseUrl, { filter: args.procedure, headers })
       if (filtered.procedures?.length) {
-        outputIntrospection(filtered)
+        outputIntrospection(filtered, args)
         return
       }
       const available = introspection.procedures?.map(p => p.path).join(', ') ?? '(none)'

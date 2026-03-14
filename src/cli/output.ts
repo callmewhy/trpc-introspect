@@ -1,10 +1,16 @@
 import type { IntrospectionResult } from '../types'
 import { formatSummary } from './format'
+import type { ParsedArgs } from './types'
 
 export const SUMMARY_THRESHOLD = 10
 
-export function outputIntrospection(introspection: IntrospectionResult) {
-  if ((introspection.procedures?.length ?? 0) > SUMMARY_THRESHOLD) {
+export function outputIntrospection(introspection: IntrospectionResult, args: ParsedArgs) {
+  const { format } = args
+  const count = introspection.procedures?.length ?? 0
+  const autoSummary = count > SUMMARY_THRESHOLD
+  const useSummary = format ? format === 'summary' : autoSummary
+
+  if (useSummary) {
     console.log(formatSummary(introspection))
   }
   else {

@@ -1,7 +1,9 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import type { EndpointInfo, IntrospectionResult } from '../src/types'
 import { formatSummary } from '../src/cli/format'
+import { outputIntrospection, SUMMARY_THRESHOLD } from '../src/cli/output'
+import { parseArgs } from '../src/cli/parse'
 
 function makeProcedures(count: number) {
   return Array.from({ length: count }, (_, i) => ({
@@ -79,6 +81,73 @@ describe('multi-filter OR logic', () => {
   it('handles empty filters array', () => {
     const result = filterByPrefixes(sampleProcedures, [])
     expect(result).toEqual([])
+  })
+})
+
+describe('parseArgs --summary / --full', () => {
+  it('parses --summary flag', () => {
+    const args = parseArgs(['http://localhost:3000', '--summary'])
+    expect(args.format).toBe('summary')
+    expect(args.baseUrl).toBe('http://localhost:3000')
+  })
+
+  it('parses --full flag', () => {
+    const args = parseArgs(['http://localhost:3000', '--full'])
+    expect(args.format).toBe('full')
+  })
+
+  it('defaults format to undefined', () => {
+    const args = parseArgs(['http://localhost:3000'])
+    expect(args.format).toBeUndefined()
+  })
+
+  it('last flag wins when both are provided', () => {
+    const args = parseArgs(['http://localhost:3000', '--summary', '--full'])
+    expect(args.format).toBe('full')
+  })
+})
+
+describe('outputIntrospection format override', () => {
+  const defaultArgs = parseArgs(['http://localhost:3000'])
+
+  it('uses summary when --summary is set even with few procedures', () => {
+    const introspection = makeIntrospection(2)
+    const args = parseArgs(['http://localhost:3000', '--summary'])
+    const spy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    outputIntrospection(introspection, args)
+    expect(spy).toHaveBeenCalledOnce()
+    expect(spy.mock.calls[0][0]).toContain('2 procedures:')
+    spy.mockRestore()
+  })
+
+  it('uses full JSON when --full is set even with many procedures', () => {
+    const introspection = makeIntrospection(SUMMARY_THRESHOLD + 5)
+    const args = parseArgs(['http://localhost:3000', '--full'])
+    const spy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    outputIntrospection(introspection, args)
+    expect(spy).toHaveBeenCalledOnce()
+    const output = JSON.parse(spy.mock.calls[0][0])
+    expect(output.procedures).toHaveLength(SUMMARY_THRESHOLD + 5)
+    spy.mockRestore()
+  })
+
+  it('auto-selects summary when count exceeds threshold', () => {
+    const introspection = makeIntrospection(SUMMARY_THRESHOLD + 1)
+    const spy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    outputIntrospection(introspection, defaultArgs)
+    expect(spy).toHaveBeenCalledOnce()
+    expect(spy.mock.calls[0][0]).toContain('procedures:')
+    spy.mockRestore()
+  })
+
+  it('auto-selects full JSON when count is within threshold', () => {
+    const introspection = makeIntrospection(SUMMARY_THRESHOLD)
+    const spy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    outputIntrospection(introspection, defaultArgs)
+    expect(spy).toHaveBeenCalledOnce()
+    const output = JSON.parse(spy.mock.calls[0][0])
+    expect(output.procedures).toHaveLength(SUMMARY_THRESHOLD)
+    spy.mockRestore()
   })
 })
 

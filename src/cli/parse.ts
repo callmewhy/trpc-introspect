@@ -17,6 +17,8 @@ Arguments:
 
 Options:
   -H, --header <key:value>  Custom header (repeatable)
+  --summary                 Force summary output format
+  --full                    Force full JSON output format
   -h, --help                Show this help message
 
 Examples:
@@ -34,6 +36,7 @@ export function parseArgs(argv: string[]): ParsedArgs {
     procedure: undefined,
     input: undefined,
     headers: {},
+    format: undefined,
   }
 
   const positional: string[] = []
@@ -44,6 +47,16 @@ export function parseArgs(argv: string[]): ParsedArgs {
     if (arg === '-h' || arg === '--help') {
       console.log(HELP)
       process.exit(0)
+    }
+
+    if (arg === '--summary') {
+      result.format = 'summary'
+      continue
+    }
+
+    if (arg === '--full') {
+      result.format = 'full'
+      continue
     }
 
     if (arg === '-H' || arg === '--header') {
