@@ -106,6 +106,10 @@ import {introspectRouter} from 'trpc-introspect'
 const endpoints = introspectRouter(appRouter)
 ```
 
+### `compactSchema(schema)`
+
+Strips noise from a JSON Schema: removes `additionalProperties: false`, simplifies nullable `anyOf` unions to `type: [X, "null"]`, strips verbose date metadata, and removes meaningless `maximum: 9007199254740991`. Applied automatically to introspection output, but also available as a standalone utility.
+
 ### `createIntrospectionRouter(t, appRouter, options?)`
 
 Creates a tRPC router with an introspection query, ready to merge.
@@ -228,6 +232,10 @@ pnpm lint      # lint
 
 ## Changelog
 
+- 0.7.0: Add `compactSchema` export that strips noise from JSON Schema output (removes
+  `additionalProperties: false`, simplifies nullable `anyOf`, strips verbose date metadata,
+  removes meaningless `maximum: 9007199254740991`). Input and output schemas are now
+  automatically compacted in introspection responses.
 - 0.6.0: Add `--summary` and `--full` CLI flags for output format control. Auto-summary for large
   routers (>10 procedures). Support comma-separated multi-prefix filtering (e.g., `user,post`).
   Refactor CLI internals to modular `src/cli/` directory.
