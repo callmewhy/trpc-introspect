@@ -1,23 +1,36 @@
 import { defineConfig } from 'tsdown'
 
-export default defineConfig({
-  entry: ['./src/index.ts', './src/client.ts', './src/cli/index.ts'],
-  outDir: './dist',
-  format: ['es', 'cjs'],
-  dts: true,
-  unbundle: true,
-  target: 'node12',
-  sourcemap: false,
-  outExtensions(context) {
+const shared = {
+  format: ['es', 'cjs'] as const,
+  target: 'node12' as const,
+  sourcemap: false as const,
+  outExtensions(context: { format: string }) {
     if (context.format === 'es') {
-      return {
-        js: '.mjs',
-      }
+      return { js: '.mjs' }
     }
     if (context.format === 'cjs') {
-      return {
-        js: '.cjs',
-      }
+      return { js: '.cjs' }
     }
   },
-})
+}
+
+export default defineConfig([
+  {
+    ...shared,
+    entry: ['./src/index.ts'],
+    outDir: './dist',
+    dts: true,
+  },
+  {
+    ...shared,
+    entry: ['./src/client.ts'],
+    outDir: './dist',
+    dts: true,
+  },
+  {
+    ...shared,
+    entry: ['./src/cli/index.ts'],
+    outDir: './dist/cli',
+    dts: false,
+  },
+])
