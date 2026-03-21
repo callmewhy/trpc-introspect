@@ -11,7 +11,7 @@
     "url": "https://github.com/callmewhy/api-introspect.git"
   },
   "scripts": {
-    "dev": "tsx watch examples/trpc/server.ts",
+    "dev:trpc": "tsx watch examples/trpc/server.ts",
     "dev:fastify": "tsx watch examples/fastify/server.ts",
     "build": "pnpm -r build",
     "clean": "pnpm -r clean",
