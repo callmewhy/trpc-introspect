@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { compactSchema } from '../src/compact'
+import { compactSchema } from '../src'
 
 describe('compactSchema', () => {
   it('removes additionalProperties: false', () => {

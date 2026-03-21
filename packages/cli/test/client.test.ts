@@ -7,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import type { Context } from '../../../examples/trpc/context'
 import { createContext } from '../../../examples/trpc/context'
 import { exampleRouter } from '../../../examples/trpc/router'
-import { callProcedure, fetchIntrospection } from '../src/client'
+import { callProcedure, fetchIntrospection } from '../src'
 
 let server: Server
 let baseUrl: string
@@ -97,7 +97,7 @@ describe('callProcedure', () => {
   })
 
   it('fails calling a protected mutation without auth', async () => {
-    await expect(
+    expect(
       callProcedure(baseUrl, 'user.create', {
         input: { name: 'Nobody', email: 'nobody@example.com' },
       }),
@@ -119,7 +119,7 @@ describe('callProcedure', () => {
   })
 
   it('throws on unknown procedure', async () => {
-    await expect(
+    expect(
       callProcedure(baseUrl, 'nonexistent'),
     ).rejects.toThrow('Procedure "nonexistent" not found')
   })
@@ -143,13 +143,13 @@ describe('callProcedure', () => {
   })
 
   it('fails without auth on auth-gated server', async () => {
-    await expect(
+    expect(
       callProcedure(authBaseUrl, 'user.list'),
     ).rejects.toThrow()
   })
 
   it('throws on invalid introspection response', async () => {
-    await expect(
+    expect(
       callProcedure(baseUrl, 'user.list', {
         // @ts-expect-error testing invalid introspection
         introspection: {},
