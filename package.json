@@ -12,6 +12,7 @@
   },
   "scripts": {
     "dev": "tsx watch examples/trpc/server.ts",
+    "dev:fastify": "tsx watch examples/fastify/server.ts",
     "build": "pnpm -r build",
     "clean": "pnpm -r clean",
     "lint": "eslint --fix --max-warnings 0",
@@ -19,10 +20,12 @@
     "test": "vitest run"
   },
   "devDependencies": {
+    "@sinclair/typebox": "^0.34.48",
     "@trpc/server": "^11.12.0",
     "@types/node": "^25.3.5",
     "eslint": "^9.39.4",
     "eslint-config-hyoban": "^7.0.3",
+    "fastify": "^5.8.2",
     "tsdown": "^0.21.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",

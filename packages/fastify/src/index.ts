@@ -1,2 +1,13 @@
-// TODO: Implement Fastify introspection adapter
-export {}
+export type { RouteInfo } from './introspect'
+export { introspectRoutes } from './introspect'
+export { withIntrospection } from './plugin'
+export type {
+  IntrospectionPluginOptions,
+} from './types'
+export type {
+  EndpointInfo,
+  IntrospectionResult,
+  IntrospectOptions,
+  Serializer,
+} from '@api-introspect/core'
+export { compactSchema } from '@api-introspect/core'

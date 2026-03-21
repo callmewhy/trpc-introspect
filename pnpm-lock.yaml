@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@sinclair/typebox':
+        specifier: ^0.34.48
+        version: 0.34.48
       '@trpc/server':
         specifier: ^11.12.0
         version: 11.12.0(typescript@5.9.3)
@@ -20,6 +23,9 @@ importers:
       eslint-config-hyoban:
         specifier: ^7.0.3
         version: 7.0.3(@eslint/markdown@7.5.1)(@typescript-eslint/rule-tester@8.56.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/typescript-estree@8.56.1(typescript@5.9.3))(@typescript-eslint/utils@8.56.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.29)(eslint@9.39.4(jiti@2.6.1))(tailwindcss@4.2.1)(typescript@5.9.3)(vitest@3.2.4(@types/debug@4.1.12)(@types/node@25.3.5)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2))
+      fastify:
+        specifier: ^5.8.2
+        version: 5.8.2
       tsdown:
         specifier: ^0.21.0
         version: 0.21.0(synckit@0.11.12)(typescript@5.9.3)
@@ -937,6 +943,9 @@ packages:
     resolution: {integrity: sha512-2HRCml6OztYXyJXAvdDXPKcawukWY2GpR5/nxKp4iBgiO3wcoEGkAaqctIbZcNB6KlUQBIqt8VYkNSj2397EfA==}
     cpu: [x64]
     os: [win32]
+
+  '@sinclair/typebox@0.34.48':
+    resolution: {integrity: sha512-kKJTNuK3AQOrgjjotVxMrCn1sUJwM76wMszfq1kdU4uYVJjvEWuFQ6HgvLt4Xz3fSmZlTOxJ/Ie13KnIcWQXFA==}
 
   '@sindresorhus/base62@1.0.0':
     resolution: {integrity: sha512-TeheYy0ILzBEI/CO55CP6zJCSdSWeRtGnHy8U8dWSUH4I68iqTsy7HkMktR4xakThc9jotkPQUXT4ITdbV7cHA==}
@@ -3498,6 +3507,8 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.59.0':
     optional: true
+
+  '@sinclair/typebox@0.34.48': {}
 
   '@sindresorhus/base62@1.0.0': {}
 
