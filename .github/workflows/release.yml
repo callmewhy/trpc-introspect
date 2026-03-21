@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    tags: ['v*']
+    tags: [ 'v*' ]
 
 permissions:
   contents: write
@@ -29,7 +29,7 @@ jobs:
 
       - run: pnpm build
 
-      - run: npm publish --access public --provenance
+      - run: pnpm -r publish --access public --provenance --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -38,9 +38,7 @@ jobs:
           registry-url: https://npm.pkg.github.com
 
       - name: Publish to GitHub Packages
-        run: |
-          npm pkg set "name=@callmewhy/trpc-introspect"
-          npm publish --access public
+        run: pnpm -r publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ github.token }}
 

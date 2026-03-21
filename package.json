@@ -1,56 +1,22 @@
 {
-  "name": "trpc-introspect",
-  "version": "0.7.1",
-  "description": "tRPC router introspection and CLI client. Discover procedures, input/output schemas, and call queries/mutations.",
-  "license": "MIT",
+  "name": "api-introspect",
   "type": "module",
-  "sideEffects": false,
-  "bin": {
-    "trpc-introspect": "./dist/cli/index.mjs"
+  "version": "0.8.0",
+  "private": true,
+  "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8",
+  "description": "API introspection SDK. Discover procedures, input/output schemas, and call queries/mutations.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/callmewhy/api-introspect.git"
   },
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      }
-    },
-    "./client": {
-      "import": {
-        "types": "./dist/client.d.mts",
-        "default": "./dist/client.mjs"
-      },
-      "require": {
-        "types": "./dist/client.d.cts",
-        "default": "./dist/client.cjs"
-      }
-    }
-  },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
-  "files": [
-    "dist/**"
-  ],
   "scripts": {
-    "dev": "tsx watch example/server.ts",
-    "build": "tsc --noEmit && tsdown",
-    "clean": "rm -rf dist",
-    "lint": "eslint \"src/**/*.ts\" --fix --max-warnings 0",
-    "lint:fix": "eslint \"src/**/*.ts\" --fix",
+    "dev": "tsx watch examples/trpc/server.ts",
+    "build": "pnpm -r build",
+    "clean": "pnpm -r clean",
+    "lint": "eslint --fix --max-warnings 0",
+    "lint:fix": "eslint --fix",
     "test": "vitest run"
-  },
-  "peerDependencies": {
-    "@trpc/server": ">=11",
-    "zod": ">=4"
-  },
-  "peerDependenciesMeta": {
-    "@trpc/server": { "optional": true },
-    "zod": { "optional": true }
   },
   "devDependencies": {
     "@trpc/server": "^11.12.0",
@@ -62,10 +28,5 @@
     "typescript": "^5.9.3",
     "vitest": "^3.2.4",
     "zod": "^4.3.6"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/callmewhy/trpc-introspect.git"
-  },
-  "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8"
+  }
 }

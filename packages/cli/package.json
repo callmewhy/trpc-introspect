@@ -1,0 +1,44 @@
+{
+  "name": "api-introspect",
+  "type": "module",
+  "version": "0.8.0",
+  "description": "CLI and HTTP client for discovering and calling API procedures via introspection.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/callmewhy/api-introspect.git",
+    "directory": "packages/cli"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "bin": {
+    "api-introspect": "./dist/cli/index.mjs"
+  },
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsc --noEmit && tsdown",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@api-introspect/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@api-introspect/trpc": "workspace:*"
+  }
+}

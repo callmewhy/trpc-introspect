@@ -4,20 +4,23 @@ Integration test the CLI by starting the example server and exercising every CLI
 
 1. Start the example server in the background and wait for readiness:
    ```bash
-   npx tsx example/server.ts &
+   npx tsx examples/trpc/server.ts &
    # poll until ready
    for i in 1 2 3 4 5; do curl -s http://localhost:3000/_introspect > /dev/null && break; sleep 1; done
    ```
 
-2. Run `npx tsx src/cli/index.ts http://localhost:3000` (no procedure argument) to list all procedures. Parse this output to learn:
+2. Run `npx tsx packages/cli/src/cli/index.ts http://localhost:3000` (no procedure argument) to list all procedures.
+   Parse this output to learn:
    - The available procedure paths, types, and input schemas
    - Which fields are required for each procedure
 
-3. Read `example/context.ts` to learn the auth header format (e.g. `Bearer <token>`).
+3. Read `examples/trpc/context.ts` to learn the auth header format (e.g. `Bearer <token>`).
 
-4. Execute ALL the following tests **in parallel** (they are independent). Use the introspection output from step 2 to construct correct inputs -- do not guess or hardcode inputs.
+4. Execute ALL the following tests **in parallel** (they are independent).
+   Use the introspection output from step 2 to construct correct inputs -- do not guess or hardcode inputs.
 
-   **Important:** When capturing CLI JSON output for parsing, always redirect to a temp file (`> /tmp/out.json`) and read it back with `node -e "...require('fs').readFileSync('/tmp/out.json')..."`. Do NOT use `$()` command substitution -- it strips backslashes, corrupting regex patterns in JSON Schema output.
+   **Important:** When capturing CLI JSON output for parsing, always redirect to a temp file (`> /tmp/out.json`) and read it back with `node -e "...require('fs').readFileSync('/tmp/out.json')..."`.
+   Do NOT use `$()` command substitution -- it strips backslashes, corrupting regex patterns in JSON Schema output.
 
    **List & Format:**
    - List all procedures (no procedure argument) -- verify returns all procedures as full JSON
@@ -48,6 +51,8 @@ Integration test the CLI by starting the example server and exercising every CLI
 
 7. Print a summary of the results to the console.
 
-8. **Self-improvement (only when all tests pass):** If every test passed, review how the skill execution went -- were there wasted round-trips, incorrect assumptions, or unnecessary steps? If so, edit this SKILL.md to prevent the issue next time.
+8. **Self-improvement (only when all tests pass):** If every test passed, review how the skill execution went -- were there wasted round-trips, incorrect assumptions, or unnecessary steps?
+   If so, edit this SKILL.md to prevent the issue next time.
 
-9. **Coverage check:** Run `npx tsx src/cli/index.ts -h` and compare the help output against the tests in step 4. If any CLI flags or features are listed in help but not covered by a test, update this SKILL.md to add the missing test cases.
+9. **Coverage check:** Run `npx tsx packages/cli/src/cli/index.ts -h` and compare the help output against the tests in step 4.
+   If any CLI flags or features are listed in help but not covered by a test, update this SKILL.md to add the missing test cases.
