@@ -1,18 +1,21 @@
-import { withIntrospection } from '@api-introspect/fastify'
+import { introspection } from '@api-introspect/fastify'
 import Fastify from 'fastify'
 
 import { healthRoutes, userRoutes } from './routes'
 
-const app = Fastify()
+async function main() {
+  const app = Fastify()
 
-withIntrospection(app, {
-  meta: { name: 'Example API' },
-})
+  await app.register(introspection, {
+    meta: { name: 'Example API' },
+  })
 
-app.register(userRoutes, { prefix: '/user' })
-app.register(healthRoutes, { prefix: '/health' })
+  app.register(userRoutes, { prefix: '/user' })
+  app.register(healthRoutes, { prefix: '/health' })
 
-app.listen({ port: 3001 }).then(() => {
+  await app.listen({ port: 3001 })
   console.log('Server running on http://localhost:3001')
   console.log('Try: curl http://localhost:3001/_introspect')
-})
+}
+
+main()

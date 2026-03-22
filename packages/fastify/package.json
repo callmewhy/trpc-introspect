@@ -36,9 +36,12 @@
     "fastify": ">=4"
   },
   "peerDependenciesMeta": {
-    "fastify": { "optional": true }
+    "fastify": {
+      "optional": true
+    }
   },
   "dependencies": {
-    "@api-introspect/core": "workspace:*"
+    "@api-introspect/core": "workspace:*",
+    "fastify-plugin": "^5.1.0"
   }
 }

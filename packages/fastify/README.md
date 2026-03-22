@@ -14,12 +14,12 @@ Peer dependency: `fastify` (>=4)
 ## Quick Start
 
 ```typescript
-import { withIntrospection } from '@api-introspect/fastify'
+import { introspection } from '@api-introspect/fastify'
 import Fastify from 'fastify'
 
 const app = Fastify()
 
-withIntrospection(app, {
+await app.register(introspection, {
   meta: { name: 'My API' },
 })
 
@@ -41,10 +41,14 @@ curl http://localhost:3001/_introspect
 
 ## API
 
-### `withIntrospection(fastify, options?)`
+### `introspection`
 
-Registers an introspection endpoint on a Fastify instance.
+Fastify plugin that registers an introspection endpoint.
 Uses Fastify's `onRoute` hook to automatically collect all routes.
+
+```ts
+app.register(introspection, options)
+```
 
 ### `introspectRoutes(routes, options?)`
 

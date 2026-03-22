@@ -1,5 +1,6 @@
 import type { IntrospectionResult } from '@api-introspect/core'
 import type { FastifyInstance } from 'fastify'
+import fp from 'fastify-plugin'
 
 import type { RouteInfo } from './introspect'
 import { introspectRoutes } from './introspect'
@@ -15,7 +16,7 @@ function generateDescription(extraDescription?: string) {
   return base
 }
 
-export function withIntrospection(
+async function introspectionPlugin(
   fastify: FastifyInstance,
   options: IntrospectionPluginOptions = {},
 ) {
@@ -65,3 +66,8 @@ export function withIntrospection(
     return payload
   })
 }
+
+export const introspection = fp(introspectionPlugin, {
+  name: '@api-introspect/fastify',
+  fastify: '>=4.0.0',
+})

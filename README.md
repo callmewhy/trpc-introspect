@@ -41,9 +41,9 @@ pnpm add @api-introspect/fastify
 ```
 
 ```ts
-import { withIntrospection } from '@api-introspect/fastify'
+import { introspection } from '@api-introspect/fastify'
 
-withIntrospection(app, {
+await app.register(introspection, {
   meta: { name: 'My API' },
 })
 ```

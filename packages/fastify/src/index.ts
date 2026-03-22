@@ -1,6 +1,6 @@
 export type { RouteInfo } from './introspect'
 export { introspectRoutes } from './introspect'
-export { withIntrospection } from './plugin'
+export { introspection } from './plugin'
 export type {
   IntrospectionPluginOptions,
 } from './types'

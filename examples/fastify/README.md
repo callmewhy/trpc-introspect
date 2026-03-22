@@ -44,5 +44,5 @@ npx api-introspect http://localhost:3001
 - Fastify route setup with TypeBox schemas
 - JSON Schema input/output definitions
 - Bearer token authentication via `preHandler` hooks
-- `withIntrospection()` plugin integration with metadata
+- `app.register(introspection)` plugin integration with metadata
 - Automatic route collection and schema extraction

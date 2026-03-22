@@ -1,9 +1,9 @@
 import Fastify from 'fastify'
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { withIntrospection } from '../src'
+import { introspection } from '../src'
 
-describe('withIntrospection', () => {
+describe('introspection plugin', () => {
   let app: ReturnType<typeof Fastify>
 
   afterEach(async () => {
@@ -12,7 +12,7 @@ describe('withIntrospection', () => {
 
   it('registers introspection endpoint', async () => {
     app = Fastify()
-    withIntrospection(app, { meta: { name: 'Test API' } })
+    await app.register(introspection, { meta: { name: 'Test API' } })
     app.get('/test', async () => 'ok')
 
     const response = await app.inject({ method: 'GET', url: '/_introspect' })
@@ -29,7 +29,7 @@ describe('withIntrospection', () => {
 
   it('captures routes registered via plugins', async () => {
     app = Fastify()
-    withIntrospection(app)
+    app.register(introspection)
 
     app.register(async (fastify) => {
       fastify.get('/', async () => 'list')
@@ -50,7 +50,7 @@ describe('withIntrospection', () => {
 
   it('extracts schemas from routes', async () => {
     app = Fastify()
-    withIntrospection(app)
+    await app.register(introspection)
 
     app.post('/users', {
       schema: {
@@ -80,7 +80,7 @@ describe('withIntrospection', () => {
 
   it('skips HEAD routes', async () => {
     app = Fastify()
-    withIntrospection(app)
+    await app.register(introspection)
     app.get('/test', async () => 'ok')
 
     const response = await app.inject({ method: 'GET', url: '/_introspect' })
@@ -94,7 +94,7 @@ describe('withIntrospection', () => {
 
   it('does not include introspection route itself', async () => {
     app = Fastify()
-    withIntrospection(app)
+    await app.register(introspection)
     app.get('/test', async () => 'ok')
 
     const response = await app.inject({ method: 'GET', url: '/_introspect' })
@@ -106,7 +106,7 @@ describe('withIntrospection', () => {
 
   it('uses custom path', async () => {
     app = Fastify()
-    withIntrospection(app, { path: '/api/docs' })
+    await app.register(introspection, { path: '/api/docs' })
     app.get('/test', async () => 'ok')
 
     const response = await app.inject({ method: 'GET', url: '/api/docs' })
@@ -118,7 +118,7 @@ describe('withIntrospection', () => {
 
   it('does nothing when disabled', async () => {
     app = Fastify()
-    withIntrospection(app, { enabled: false })
+    await app.register(introspection, { enabled: false })
     app.get('/test', async () => 'ok')
 
     const response = await app.inject({ method: 'GET', url: '/_introspect' })
@@ -127,7 +127,7 @@ describe('withIntrospection', () => {
 
   it('includes description from meta', async () => {
     app = Fastify()
-    withIntrospection(app, { meta: { description: 'My custom API' } })
+    await app.register(introspection, { meta: { description: 'My custom API' } })
 
     const response = await app.inject({ method: 'GET', url: '/_introspect' })
     const body = JSON.parse(response.body)
@@ -138,7 +138,7 @@ describe('withIntrospection', () => {
 
   it('applies include filter', async () => {
     app = Fastify()
-    withIntrospection(app, { include: ['/api'] })
+    await app.register(introspection, { include: ['/api'] })
     app.get('/api/users', async () => [])
     app.get('/health', async () => 'ok')
 
@@ -151,7 +151,7 @@ describe('withIntrospection', () => {
 
   it('applies exclude filter', async () => {
     app = Fastify()
-    withIntrospection(app, { exclude: ['/health'] })
+    await app.register(introspection, { exclude: ['/health'] })
     app.get('/api/users', async () => [])
     app.get('/health', async () => 'ok')
 
@@ -164,7 +164,7 @@ describe('withIntrospection', () => {
 
   it('sets custom serializer', async () => {
     app = Fastify()
-    withIntrospection(app, { serializer: 'superjson' })
+    await app.register(introspection, { serializer: 'superjson' })
 
     const response = await app.inject({ method: 'GET', url: '/_introspect' })
     const body = JSON.parse(response.body)
