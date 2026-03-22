@@ -31,7 +31,7 @@ describe('introspection plugin', () => {
     app = Fastify()
     app.register(introspection)
 
-    app.register(async (fastify) => {
+    app.register(async (fastify: ReturnType<typeof Fastify>) => {
       fastify.get('/', async () => 'list')
       fastify.post('/', async () => 'create')
     }, { prefix: '/users' })
