@@ -13,18 +13,18 @@ describe('introspectRoutes', () => {
     const result = introspectRoutes(routes)
 
     expect(result).toHaveLength(1)
-    expect(result[0]).toEqual({ path: 'GET /users', type: 'query' })
+    expect(result[0]).toEqual({ path: '/users', type: 'http', method: 'GET' })
   })
 
-  it('extracts POST route as mutation', () => {
+  it('extracts POST route', () => {
     const routes = [route('POST', '/users')]
     const result = introspectRoutes(routes)
 
     expect(result).toHaveLength(1)
-    expect(result[0]).toEqual({ path: 'POST /users', type: 'mutation' })
+    expect(result[0]).toEqual({ path: '/users', type: 'http', method: 'POST' })
   })
 
-  it('maps PUT, PATCH, DELETE to mutation', () => {
+  it('preserves HTTP method for PUT, PATCH, DELETE', () => {
     const routes = [
       route('PUT', '/users/1'),
       route('PATCH', '/users/1'),
@@ -34,15 +34,19 @@ describe('introspectRoutes', () => {
 
     expect(result).toHaveLength(3)
     for (const r of result) {
-      expect(r.type).toBe('mutation')
+      expect(r.type).toBe('http')
     }
+    expect(result[0]?.method).toBe('PUT')
+    expect(result[1]?.method).toBe('PATCH')
+    expect(result[2]?.method).toBe('DELETE')
   })
 
-  it('maps OPTIONS to query', () => {
+  it('preserves OPTIONS method', () => {
     const routes = [route('OPTIONS', '/users')]
     const result = introspectRoutes(routes)
 
-    expect(result[0]?.type).toBe('query')
+    expect(result[0]?.type).toBe('http')
+    expect(result[0]?.method).toBe('OPTIONS')
   })
 
   it('extracts description from schema', () => {
@@ -192,15 +196,17 @@ describe('introspectRoutes', () => {
     expect(result[0]).not.toHaveProperty('input')
   })
 
-  it('includes method in path', () => {
+  it('separates method from path', () => {
     const routes = [
       route('GET', '/users'),
       route('POST', '/users'),
     ]
     const result = introspectRoutes(routes)
 
-    expect(result[0]?.path).toBe('GET /users')
-    expect(result[1]?.path).toBe('POST /users')
+    expect(result[0]?.path).toBe('/users')
+    expect(result[0]?.method).toBe('GET')
+    expect(result[1]?.path).toBe('/users')
+    expect(result[1]?.method).toBe('POST')
   })
 
   it('applies include filter on URL path', () => {
@@ -212,8 +218,8 @@ describe('introspectRoutes', () => {
     const result = introspectRoutes(routes, { include: ['/users'] })
 
     expect(result).toHaveLength(2)
-    expect(result[0]?.path).toBe('GET /users')
-    expect(result[1]?.path).toBe('POST /users')
+    expect(result[0]?.path).toBe('/users')
+    expect(result[1]?.path).toBe('/users')
   })
 
   it('applies exclude filter on URL path', () => {
@@ -225,8 +231,8 @@ describe('introspectRoutes', () => {
     const result = introspectRoutes(routes, { exclude: ['/admin'] })
 
     expect(result).toHaveLength(2)
-    expect(result[0]?.path).toBe('GET /users')
-    expect(result[1]?.path).toBe('POST /users')
+    expect(result[0]?.path).toBe('/users')
+    expect(result[1]?.path).toBe('/users')
   })
 
   it('applies both include and exclude filters', () => {
@@ -242,8 +248,8 @@ describe('introspectRoutes', () => {
     })
 
     expect(result).toHaveLength(2)
-    expect(result[0]?.path).toBe('GET /api/users')
-    expect(result[1]?.path).toBe('POST /api/users')
+    expect(result[0]?.path).toBe('/api/users')
+    expect(result[1]?.path).toBe('/api/users')
   })
 
   it('compacts schemas - removes additionalProperties', () => {
@@ -273,14 +279,14 @@ describe('introspectRoutes', () => {
     const result = introspectRoutes(routes)
 
     expect(result).toHaveLength(1)
-    expect(result[0]).toEqual({ path: 'GET /health', type: 'query' })
+    expect(result[0]).toEqual({ path: '/health', type: 'http', method: 'GET' })
   })
 
   it('normalizes method to uppercase', () => {
     const routes = [route('get', '/users')]
     const result = introspectRoutes(routes)
 
-    expect(result[0]?.path).toBe('GET /users')
-    expect(result[0]?.type).toBe('query')
+    expect(result[0]?.path).toBe('/users')
+    expect(result[0]?.method).toBe('GET')
   })
 })

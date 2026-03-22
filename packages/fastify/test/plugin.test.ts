@@ -22,8 +22,9 @@ describe('withIntrospection', () => {
     expect(body.name).toBe('Test API')
     expect(body.serializer).toBe('json')
     expect(body.procedures).toHaveLength(1)
-    expect(body.procedures[0].path).toBe('GET /test')
-    expect(body.procedures[0].type).toBe('query')
+    expect(body.procedures[0].path).toBe('/test')
+    expect(body.procedures[0].type).toBe('http')
+    expect(body.procedures[0].method).toBe('GET')
   })
 
   it('captures routes registered via plugins', async () => {
@@ -39,8 +40,12 @@ describe('withIntrospection', () => {
     const body = JSON.parse(response.body)
 
     expect(body.procedures).toHaveLength(2)
-    expect(body.procedures[0].path).toBe('GET /users')
-    expect(body.procedures[1].path).toBe('POST /users')
+    expect(body.procedures[0].path).toBe('/users')
+    expect(body.procedures[0].type).toBe('http')
+    expect(body.procedures[0].method).toBe('GET')
+    expect(body.procedures[1].path).toBe('/users')
+    expect(body.procedures[1].type).toBe('http')
+    expect(body.procedures[1].method).toBe('POST')
   })
 
   it('extracts schemas from routes', async () => {
@@ -81,9 +86,10 @@ describe('withIntrospection', () => {
     const response = await app.inject({ method: 'GET', url: '/_introspect' })
     const body = JSON.parse(response.body)
 
-    const paths = body.procedures.map((p: { path: string }) => p.path)
-    expect(paths).not.toContain('HEAD /test')
-    expect(paths).toContain('GET /test')
+    const methods = body.procedures.map((p: { method: string }) => p.method)
+    expect(methods).not.toContain('HEAD')
+    expect(body.procedures[0].path).toBe('/test')
+    expect(body.procedures[0].method).toBe('GET')
   })
 
   it('does not include introspection route itself', async () => {
@@ -95,7 +101,7 @@ describe('withIntrospection', () => {
     const body = JSON.parse(response.body)
 
     const paths = body.procedures.map((p: { path: string }) => p.path)
-    expect(paths).not.toContain('GET /_introspect')
+    expect(paths).not.toContain('/_introspect')
   })
 
   it('uses custom path', async () => {
@@ -126,7 +132,7 @@ describe('withIntrospection', () => {
     const response = await app.inject({ method: 'GET', url: '/_introspect' })
     const body = JSON.parse(response.body)
 
-    expect(body.description).toContain('Fastify REST API')
+    expect(body.description).toContain('Fastify HTTP API')
     expect(body.description).toContain('My custom API')
   })
 
@@ -140,7 +146,7 @@ describe('withIntrospection', () => {
     const body = JSON.parse(response.body)
 
     expect(body.procedures).toHaveLength(1)
-    expect(body.procedures[0].path).toBe('GET /api/users')
+    expect(body.procedures[0].path).toBe('/api/users')
   })
 
   it('applies exclude filter', async () => {
@@ -153,7 +159,7 @@ describe('withIntrospection', () => {
     const body = JSON.parse(response.body)
 
     expect(body.procedures).toHaveLength(1)
-    expect(body.procedures[0].path).toBe('GET /api/users')
+    expect(body.procedures[0].path).toBe('/api/users')
   })
 
   it('sets custom serializer', async () => {

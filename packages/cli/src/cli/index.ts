@@ -96,16 +96,15 @@ async function main() {
   }
 }
 
-/** Match prefix for both tRPC dot paths (`user.getById`) and REST paths (`GET /user/:id`). */
+/** Match prefix for both tRPC dot paths (`user.getById`) and REST paths (`/user/:id`). */
 function matchesPrefix(path: string, prefix: string): boolean {
   // tRPC: "user.getById" matches prefix "user"
   if (path === prefix || path.startsWith(`${prefix}.`))
     return true
-  // REST: "GET /user/:id" matches prefix "user" (check the URL path portion)
-  const spaceIdx = path.indexOf(' ')
-  if (spaceIdx !== -1) {
-    const urlPath = path.slice(spaceIdx + 1)
-    return urlPath === `/${prefix}` || urlPath.startsWith(`/${prefix}/`)
+  // REST: "/user/:id" matches prefix "user" or "/user"
+  if (path.startsWith('/')) {
+    const normalizedPrefix = prefix.startsWith('/') ? prefix : `/${prefix}`
+    return path === normalizedPrefix || path.startsWith(`${normalizedPrefix}/`)
   }
   return false
 }

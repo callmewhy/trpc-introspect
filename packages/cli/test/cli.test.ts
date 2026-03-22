@@ -218,4 +218,20 @@ describe('formatSummary', () => {
     expect(output).toContain('  mutation      b.medium')
     expect(output).toContain('  subscription  c.long')
   })
+
+  it('uses method for HTTP endpoints in summary', () => {
+    const introspection: IntrospectionResult = {
+      description: 'Test',
+      serializer: 'json',
+      procedures: [
+        { path: '/users', type: 'http', method: 'GET' },
+        { path: '/users', type: 'http', method: 'POST' },
+        { path: '/users/:id', type: 'http', method: 'DELETE' },
+      ],
+    }
+    const output = formatSummary(introspection)
+    expect(output).toContain('GET     /users')
+    expect(output).toContain('POST    /users')
+    expect(output).toContain('DELETE  /users/:id')
+  })
 })

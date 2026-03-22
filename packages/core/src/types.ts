@@ -1,14 +1,27 @@
 export type JSONSchema = Record<string, unknown>
 
-export type ProcedureType = 'query' | 'mutation' | 'subscription'
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'HEAD'
 
-export interface EndpointInfo {
+export type ProcedureType = 'query' | 'mutation' | 'subscription' | 'http'
+
+interface BaseEndpointInfo {
   path: string
-  type: ProcedureType
   description?: string
   input?: JSONSchema
   output?: JSONSchema
 }
+
+interface RpcEndpointInfo extends BaseEndpointInfo {
+  type: 'query' | 'mutation' | 'subscription'
+  method?: never
+}
+
+interface HttpEndpointInfo extends BaseEndpointInfo {
+  type: 'http'
+  method: HttpMethod
+}
+
+export type EndpointInfo = RpcEndpointInfo | HttpEndpointInfo
 
 export interface IntrospectOptions {
   include?: readonly string[]

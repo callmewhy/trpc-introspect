@@ -28,7 +28,6 @@ export interface CallProcedureOptions {
 }
 
 const TRAILING_SLASHES = /\/+$/
-const REST_PATH_RE = /^(GET|POST|PUT|PATCH|DELETE|OPTIONS|HEAD)\s+(\/.*)$/i
 const PATH_PARAM_RE = /:([A-Z_]\w*)/gi
 
 function joinUrl(baseUrl: string, path: string): string {
@@ -80,7 +79,7 @@ export async function callProcedure(
   const { input, headers = {} } = options
   let { type, transformer } = options
 
-  // Auto-detect type and transformer from introspection
+  // Auto-detect type/method and transformer from introspection
   if (!type || !transformer) {
     const introspection = options.introspection ?? await fetchIntrospection(baseUrl, { headers })
     if (!introspection?.procedures) {
@@ -93,38 +92,43 @@ export async function callProcedure(
     }
     type ??= proc.type === 'mutation' ? 'mutation' : 'query'
     transformer ??= resolveTransformer(introspection.serializer)
-  }
 
-  // REST-style paths like "GET /user/:id" — extract method and substitute params
-  const restMatch = procedure.match(REST_PATH_RE)
+    // HTTP endpoint: use method field and substitute path params
+    if (proc.type === 'http') {
+      let routePath = procedure
+      let body: Record<string, unknown> | undefined
+
+      if (input && typeof input === 'object' && !Array.isArray(input)) {
+        const remaining = { ...(input as Record<string, unknown>) }
+        routePath = routePath.replace(PATH_PARAM_RE, (_match, param: string) => {
+          const value = remaining[param]
+          delete remaining[param]
+          return String(value ?? '')
+        })
+        if (Object.keys(remaining).length > 0) {
+          body = remaining
+        }
+      }
+
+      const url = `${baseUrl.replace(TRAILING_SLASHES, '')}${routePath}`
+      const res = await fetch(url, {
+        method: proc.method,
+        headers: body ? { 'Content-Type': 'application/json', ...headers } : headers,
+        body: body ? JSON.stringify(body) : undefined,
+      })
+
+      if (!res.ok) {
+        const resBody = await res.text()
+        throw new Error(`HTTP ${res.status}: ${resBody}`)
+      }
+
+      const json: unknown = await res.json()
+      return json
+    }
+  }
 
   let res: Response
-  if (restMatch) {
-    const method = restMatch[1].toUpperCase()
-    let routePath = restMatch[2]
-    let body: Record<string, unknown> | undefined
-
-    // Substitute path params (:id) from input and collect remaining fields for body
-    if (input && typeof input === 'object' && !Array.isArray(input)) {
-      const remaining = { ...(input as Record<string, unknown>) }
-      routePath = routePath.replace(PATH_PARAM_RE, (_match, param: string) => {
-        const value = remaining[param]
-        delete remaining[param]
-        return String(value ?? '')
-      })
-      if (Object.keys(remaining).length > 0) {
-        body = remaining
-      }
-    }
-
-    const url = `${baseUrl.replace(TRAILING_SLASHES, '')}${routePath}`
-    res = await fetch(url, {
-      method,
-      headers: body ? { 'Content-Type': 'application/json', ...headers } : headers,
-      body: body ? JSON.stringify(body) : undefined,
-    })
-  }
-  else {
+  {
     const url = joinUrl(baseUrl, procedure)
     const encoded = encodeInput(input, transformer)
 

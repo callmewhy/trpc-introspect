@@ -10,10 +10,11 @@ export function formatSummary(introspection: IntrospectionResult): string {
   lines.push(`${procedures.length} procedures:`)
   lines.push('')
 
-  const maxTypeLen = Math.max(...procedures.map(p => p.type.length))
+  const label = (p: { type: string, method?: string }) => p.type === 'http' ? p.method ?? '' : p.type
+  const maxLabelLen = Math.max(...procedures.map(p => label(p).length))
   for (const p of procedures) {
     const desc = p.description ? `  # ${p.description}` : ''
-    lines.push(`  ${p.type.padEnd(maxTypeLen)}  ${p.path}${desc}`)
+    lines.push(`  ${label(p).padEnd(maxLabelLen)}  ${p.path}${desc}`)
   }
 
   lines.push('')

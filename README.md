@@ -96,7 +96,7 @@ pnpm dev:fastify   # Fastify server on http://localhost:3001
 ```
 
 - [examples/trpc](./examples/trpc) - tRPC server with queries, mutations, and auth middleware
-- [examples/fastify](./examples/fastify) - Fastify REST server with TypeBox schemas
+- [examples/fastify](./examples/fastify) - Fastify HTTP server with TypeBox schemas
 
 ## Development
 

@@ -1,4 +1,4 @@
-import type { EndpointInfo, IntrospectOptions, JSONSchema, ProcedureType } from '@api-introspect/core'
+import type { EndpointInfo, HttpMethod, IntrospectOptions, JSONSchema } from '@api-introspect/core'
 import { compactSchema, isExcludedPath, isIncludedPath } from '@api-introspect/core'
 
 export interface RouteInfo {
@@ -14,10 +14,6 @@ export interface RouteInfo {
 }
 
 const QUERY_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
-
-function methodToType(method: string): ProcedureType {
-  return QUERY_METHODS.has(method.toUpperCase()) ? 'query' : 'mutation'
-}
 
 function extractInputSchema(route: RouteInfo): JSONSchema | undefined {
   const schema = route.schema
@@ -91,15 +87,15 @@ export function introspectRoutes(
       continue
     }
 
-    const path = `${route.method.toUpperCase()} ${route.url}`
-    const type = methodToType(route.method)
+    const method = route.method.toUpperCase()
     const description = typeof route.schema?.description === 'string' ? route.schema.description : undefined
     const input = compactSchema(extractInputSchema(route))
     const output = compactSchema(extractOutputSchema(route))
 
     endpoints.push({
-      path,
-      type,
+      path: route.url,
+      type: 'http',
+      method: method as HttpMethod,
       ...(description && { description }),
       ...(input && { input }),
       ...(output && { output }),

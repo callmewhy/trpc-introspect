@@ -20,14 +20,14 @@ api-introspect http://localhost:3000 user
 # Filter by multiple prefixes
 api-introspect http://localhost:3000 user,post
 
-# Call a query
+# Call a TRPC query
 api-introspect http://localhost:3000 user.getById '{"id":1}'
 
-# Call a mutation
+# Call a TRPC mutation
 api-introspect http://localhost:3000 user.create '{"name":"Alice"}'
 
-# Call a REST endpoint
-api-introspect http://localhost:3001 'GET /user/:id' '{"id":1}'
+# Call a HTTP endpoint
+api-introspect http://localhost:3001 '/user/:id' '{"id":1}'
 
 # With auth header
 api-introspect http://localhost:3000 -H "Authorization:Bearer token"
@@ -65,8 +65,8 @@ const data = await callProcedure('http://localhost:3000', 'user.getById', {
   headers: { Authorization: 'Bearer ...' },
 })
 
-// Call a REST endpoint
-const user = await callProcedure('http://localhost:3001', 'GET /user/:id', {
+// Call a HTTP endpoint
+const user = await callProcedure('http://localhost:3001', '/user/:id', {
   input: { id: 1 },
 })
 ```
