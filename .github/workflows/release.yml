@@ -33,15 +33,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: actions/setup-node@v4
-        with:
-          registry-url: https://npm.pkg.github.com
-
-      - name: Publish to GitHub Packages
-        run: pnpm -r publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ github.token }}
-
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
