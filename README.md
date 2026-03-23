@@ -54,9 +54,6 @@ await app.register(introspection, {
 # List all procedures
 npx api-introspect http://localhost:3000
 
-# Filter by prefix
-npx api-introspect http://localhost:3000 user
-
 # Call a procedure
 npx api-introspect http://localhost:3000 user.getById '{"id":1}'
 ```
@@ -112,6 +109,9 @@ pnpm lint:fix    # lint
 
 - 0.8.0: **Breaking:** Restructure as monorepo with `@api-introspect/core`, `@api-introspect/trpc`,
   `@api-introspect/fastify`, and `api-introspect` (CLI).
+  Add Fastify introspection plugin with route and schema extraction.
+  Preserve HTTP methods in endpoint info for REST APIs.
+  Remove `filter` option from introspection (use CLI procedure argument instead).
   Rename CLI from `trpc-introspect` to `api-introspect`.
   The old `trpc-introspect` npm package is deprecated.
 - 0.7.1: Fix TS2742 error for consumers by bundling DTS per entry point.
