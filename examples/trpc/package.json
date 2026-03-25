@@ -1,0 +1,12 @@
+{
+  "name": "@api-introspect/example-trpc",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch server.ts"
+  },
+  "dependencies": {
+    "@api-introspect/trpc": "workspace:*",
+    "@trpc/server": "^11.12.0",
+    "zod": "^4.3.6"
+  }
+}

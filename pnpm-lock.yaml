@@ -54,6 +54,27 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6
 
+  examples/fastify:
+    dependencies:
+      '@api-introspect/fastify':
+        specifier: workspace:*
+        version: link:../../packages/fastify
+      fastify:
+        specifier: ^5.8.2
+        version: 5.8.2
+
+  examples/trpc:
+    dependencies:
+      '@api-introspect/trpc':
+        specifier: workspace:*
+        version: link:../../packages/trpc
+      '@trpc/server':
+        specifier: ^11.12.0
+        version: 11.12.0(typescript@5.9.3)
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+
   packages/cli:
     dependencies:
       '@api-introspect/core':

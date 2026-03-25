@@ -11,9 +11,7 @@
     "url": "https://github.com/callmewhy/api-introspect.git"
   },
   "scripts": {
-    "dev": "turbo dev --filter='./packages/*' & tsx watch examples/trpc/server.ts & tsx watch examples/fastify/server.ts & wait",
-    "dev:trpc": "tsx watch examples/trpc/server.ts",
-    "dev:fastify": "tsx watch examples/fastify/server.ts",
+    "dev": "turbo dev",
     "build": "turbo build",
     "clean": "turbo clean",
     "lint": "eslint --fix --max-warnings 0",

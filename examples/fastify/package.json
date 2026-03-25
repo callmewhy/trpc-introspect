@@ -1,0 +1,11 @@
+{
+  "name": "@api-introspect/example-fastify",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch server.ts"
+  },
+  "dependencies": {
+    "@api-introspect/fastify": "workspace:*",
+    "fastify": "^5.8.2"
+  }
+}
