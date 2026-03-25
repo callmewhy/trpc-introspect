@@ -306,4 +306,42 @@ describe('compactSchema', () => {
       required: ['expiresAt'],
     })
   })
+
+  it('removes pattern from properties', () => {
+    const schema = {
+      type: 'object',
+      properties: {
+        email: { type: 'string', format: 'email', pattern: '^[a-z]+@example.com$' },
+      },
+      required: ['email'],
+    }
+
+    const result = compactSchema(schema)
+    const props = result?.properties as Record<string, Record<string, unknown>>
+    expect(props.email).not.toHaveProperty('pattern')
+    expect(props.email.format).toBe('email')
+  })
+
+  it('simplifies anyOf with const values to enum', () => {
+    const schema = {
+      type: 'object',
+      properties: {
+        prediction: {
+          anyOf: [
+            { type: 'string', const: 'Graduate' },
+            { type: 'string', const: 'Fade' },
+          ],
+        },
+      },
+      required: ['prediction'],
+    }
+
+    expect(compactSchema(schema)).toEqual({
+      type: 'object',
+      properties: {
+        prediction: { enum: ['Graduate', 'Fade'] },
+      },
+      required: ['prediction'],
+    })
+  })
 })

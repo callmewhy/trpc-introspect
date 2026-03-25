@@ -16,41 +16,6 @@ export interface RouteInfo {
 
 const QUERY_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
 
-function extractInputSchema(route: RouteInfo): JSONSchema | undefined {
-  const schema = route.schema
-  if (!schema)
-    return undefined
-
-  const isQuery = QUERY_METHODS.has(route.method.toUpperCase())
-  const primary = (isQuery ? schema.querystring : schema.body) as JSONSchema | undefined
-  const params = schema.params as JSONSchema | undefined
-
-  if (!primary && !params)
-    return undefined
-  if (!primary)
-    return params
-  if (!params)
-    return primary
-
-  const merged: JSONSchema = { type: 'object', properties: {} }
-  const required: string[] = []
-
-  for (const source of [params, primary]) {
-    if (source?.properties && typeof source.properties === 'object') {
-      Object.assign(merged.properties as Record<string, unknown>, source.properties)
-    }
-    if (Array.isArray(source?.required)) {
-      required.push(...(source.required as string[]))
-    }
-  }
-
-  if (required.length > 0) {
-    merged.required = required
-  }
-
-  return merged
-}
-
 function extractOutputSchema(route: RouteInfo): JSONSchema | undefined {
   const response = route.schema?.response
   if (!response || typeof response !== 'object')
@@ -89,7 +54,10 @@ export function introspectRoutes(
     const method = route.method.toUpperCase()
     const description = typeof route.schema?.description === 'string' ? route.schema.description : undefined
     const meta = route.meta && Object.keys(route.meta).length > 0 ? route.meta : undefined
-    const input = compactSchema(extractInputSchema(route))
+    const isQuery = QUERY_METHODS.has(method)
+    const params = compactSchema(route.schema?.params as JSONSchema | undefined)
+    const query = isQuery ? compactSchema(route.schema?.querystring as JSONSchema | undefined) : undefined
+    const body = !isQuery ? compactSchema(route.schema?.body as JSONSchema | undefined) : undefined
     const output = compactSchema(extractOutputSchema(route))
 
     endpoints.push({
@@ -98,7 +66,9 @@ export function introspectRoutes(
       method: method as HttpMethod,
       ...(description && { description }),
       ...(meta && { meta }),
-      ...(input && { input }),
+      ...(params && { params }),
+      ...(query && { query }),
+      ...(body && { body }),
       ...(output && { output }),
     })
   }

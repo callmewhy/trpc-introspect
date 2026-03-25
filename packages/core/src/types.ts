@@ -8,18 +8,21 @@ interface BaseEndpointInfo {
   path: string
   description?: string
   meta?: Record<string, unknown>
-  input?: JSONSchema
   output?: JSONSchema
 }
 
 interface RpcEndpointInfo extends BaseEndpointInfo {
   type: 'query' | 'mutation' | 'subscription'
   method?: never
+  input?: JSONSchema
 }
 
 interface HttpEndpointInfo extends BaseEndpointInfo {
   type: 'http'
   method: HttpMethod
+  params?: JSONSchema
+  query?: JSONSchema
+  body?: JSONSchema
 }
 
 export type EndpointInfo = RpcEndpointInfo | HttpEndpointInfo

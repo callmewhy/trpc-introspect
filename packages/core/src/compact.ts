@@ -28,6 +28,8 @@ function cleanNode(schema: JSONSchema): JSONSchema {
       continue
     if (key === 'maximum' && value === MAX_SAFE_INT)
       continue
+    if (key === 'pattern')
+      continue
     if (isDate && (key === 'deprecated' || key === 'title' || key === 'description'))
       continue
 
@@ -49,10 +51,14 @@ function cleanNode(schema: JSONSchema): JSONSchema {
       const simplified = simplifyNullableAnyOf(value as JSONSchema[])
       if (simplified) {
         Object.assign(result, simplified)
+        continue
       }
-      else {
-        result[key] = value.map(v => isRecord(v) ? cleanNode(v as JSONSchema) : v)
+      const constEnum = simplifyConstAnyOf(value as JSONSchema[])
+      if (constEnum) {
+        result.enum = constEnum
+        continue
       }
+      result[key] = value.map(v => isRecord(v) ? cleanNode(v as JSONSchema) : v)
       continue
     }
 
@@ -79,6 +85,18 @@ function simplifyNullableAnyOf(parts: JSONSchema[]): JSONSchema | null {
 
   const { type: _, ...rest } = inner
   return { type: [type, 'null'], ...rest }
+}
+
+function simplifyConstAnyOf(parts: JSONSchema[]): unknown[] | null {
+  if (parts.length === 0)
+    return null
+  const values: unknown[] = []
+  for (const part of parts) {
+    if (part.const === undefined)
+      return null
+    values.push(part.const)
+  }
+  return values
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
