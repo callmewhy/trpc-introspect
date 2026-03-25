@@ -6,7 +6,7 @@ export interface TransformerLike {
 }
 
 export interface FetchIntrospectionOptions {
-  /** Introspection endpoint path (default: `'_introspect'`) */
+  /** Introspection endpoint path (default: `'/_introspect'`) */
   path?: string
   /** Custom fetch headers */
   headers?: Record<string, string>
@@ -28,11 +28,12 @@ export interface CallProcedureOptions {
 }
 
 const TRAILING_SLASHES = /\/+$/
+const LEADING_SLASHES = /^\/+/
 const PATH_PARAM_RE = /:([A-Z_]\w*)/gi
 
 function joinUrl(baseUrl: string, path: string): string {
   const base = baseUrl.replace(TRAILING_SLASHES, '')
-  return `${base}/${path}`
+  return `${base}/${path.replace(LEADING_SLASHES, '')}`
 }
 
 /**
@@ -45,7 +46,7 @@ export async function fetchIntrospection(
   baseUrl: string,
   options: FetchIntrospectionOptions = {},
 ): Promise<IntrospectionResult> {
-  const { path = '_introspect', headers } = options
+  const { path = '/_introspect', headers } = options
   const url = joinUrl(baseUrl, path)
 
   const res = await fetch(url, { headers })
