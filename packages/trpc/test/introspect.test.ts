@@ -160,11 +160,7 @@ describe('introspectRouter', () => {
 
     expect(result[0]?.input).toBeDefined()
     const properties = result[0]?.input?.properties as Record<string, Record<string, unknown>>
-    expect(properties.date).toMatchObject({
-      type: 'string',
-      format: 'date-time',
-    })
-    expect(properties.date).not.toHaveProperty('deprecated')
+    expect(properties.date).toEqual({ type: 'string' })
   })
 
   it('handles .refine() schemas', () => {

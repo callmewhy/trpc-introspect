@@ -2,13 +2,17 @@ import type { JSONSchema } from './types'
 
 const MAX_SAFE_INT = 9007199254740991
 
+/** Keys that are pure noise for LLM consumers. */
+const STRIP_KEYS = new Set(['pattern', 'format', 'title', 'default', 'examples', '$id'])
+
 /**
- * Strips noise from a JSON Schema while preserving standard structure.
+ * Strips noise from a JSON Schema for LLM consumption.
  *
- * - Removes `additionalProperties: false`
- * - Simplifies nullable `anyOf` to `type: [X, "null"]`
- * - Strips date verbose metadata (`deprecated`, `title`, `description`)
- * - Removes meaningless `maximum: 9007199254740991`
+ * Removed: `additionalProperties: false`, `pattern`, `format`, `title`,
+ * `default`, `examples`, `$id`, `maximum: MAX_SAFE_INT`.
+ * Simplified: nullable `anyOf` → `type: [X, "null"]`, all-const `anyOf` → `enum`.
+ * Preserved: `type`, `properties`, `required`, `items`, `enum`, `description`,
+ * `minimum`, `maximum`, `minLength`, `maxLength`, `exclusiveMinimum`, `exclusiveMaximum`.
  */
 export function compactSchema(schema: JSONSchema | undefined): JSONSchema | undefined {
   if (!schema || typeof schema !== 'object')
@@ -28,9 +32,9 @@ function cleanNode(schema: JSONSchema): JSONSchema {
       continue
     if (key === 'maximum' && value === MAX_SAFE_INT)
       continue
-    if (key === 'pattern')
+    if (STRIP_KEYS.has(key))
       continue
-    if (isDate && (key === 'deprecated' || key === 'title' || key === 'description'))
+    if (isDate && (key === 'deprecated' || key === 'description'))
       continue
 
     if (key === 'properties' && isRecord(value)) {

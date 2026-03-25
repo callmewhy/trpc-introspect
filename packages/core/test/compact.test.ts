@@ -51,7 +51,7 @@ describe('compactSchema', () => {
     expect(compactSchema(schema)).toEqual({
       type: 'object',
       properties: {
-        logo: { type: ['string', 'null'], format: 'uri' },
+        logo: { type: ['string', 'null'] },
       },
       required: ['logo'],
     })
@@ -126,7 +126,7 @@ describe('compactSchema', () => {
     expect(compactSchema(schema)).toEqual({
       type: 'object',
       properties: {
-        scheduledAt: { type: 'string', format: 'date-time' },
+        scheduledAt: { type: 'string' },
       },
       required: ['scheduledAt'],
     })
@@ -301,25 +301,36 @@ describe('compactSchema', () => {
     expect(compactSchema(schema)).toEqual({
       type: 'object',
       properties: {
-        expiresAt: { type: ['string', 'null'], format: 'date-time' },
+        expiresAt: { type: ['string', 'null'] },
       },
       required: ['expiresAt'],
     })
   })
 
-  it('removes pattern from properties', () => {
+  it('strips pattern, format, title, default, examples, $id', () => {
     const schema = {
       type: 'object',
+      $id: 'MySchema',
+      title: 'My Object',
       properties: {
-        email: { type: 'string', format: 'email', pattern: '^[a-z]+@example.com$' },
+        email: {
+          type: 'string',
+          format: 'email',
+          pattern: '^[a-z]+@example.com$',
+          title: 'Email',
+          default: 'a@b.com',
+          examples: ['test@example.com'],
+          description: 'User email',
+        },
       },
       required: ['email'],
     }
 
     const result = compactSchema(schema)
+    expect(result).not.toHaveProperty('$id')
+    expect(result).not.toHaveProperty('title')
     const props = result?.properties as Record<string, Record<string, unknown>>
-    expect(props.email).not.toHaveProperty('pattern')
-    expect(props.email.format).toBe('email')
+    expect(props.email).toEqual({ type: 'string', description: 'User email' })
   })
 
   it('simplifies anyOf with const values to enum', () => {
