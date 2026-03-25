@@ -33,7 +33,7 @@
   ],
   "scripts": {
     "build": "tsc --noEmit && tsdown",
-    "dev": "tsdown --watch",
+    "dev": "tsdown --watch --no-clean",
     "clean": "rm -rf dist"
   },
   "dependencies": {
