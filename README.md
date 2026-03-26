@@ -148,11 +148,12 @@ pnpm lint:fix    # lint
 
 ## Changelog
 
-- 0.13.0: Unify input schemas into a single `input` array with `in` field (`'params'`, `'query'`, `'body'`).
+- 0.13.1: Rename `InputLocation` value from `'params'` to `'path'` for consistency with OpenAPI conventions.
+- 0.13.0: Unify input schemas into a single `input` array with `in` field (`'path'`, `'query'`, `'body'`).
   New `InputSchema` and `InputLocation` types exported from core.
   Meta fields flattened directly into endpoint objects (no more `meta` wrapper).
   `compactSchema` now retains `default` values.
-  CLI client routes input by `in` location (params, query, body) when calling HTTP endpoints.
+  CLI client routes input by `in` location (path, query, body) when calling HTTP endpoints.
 - 0.12.0: Add `IntrospectionMeta` type with required `name` and extensible fields.
   Meta fields are now flattened directly into the introspection response instead of cherry-picking known keys.
   `IntrospectionResult` uses an index signature for arbitrary top-level fields.
