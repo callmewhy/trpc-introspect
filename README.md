@@ -148,6 +148,7 @@ pnpm lint:fix    # lint
 
 ## Changelog
 
+- 0.13.2: `compactSchema` now preserves nullable object/array `anyOf` instead of flattening to `type: [X, "null"]` for better toolchain compatibility.
 - 0.13.1: Rename `InputLocation` value from `'params'` to `'path'` for consistency with OpenAPI conventions.
 - 0.13.0: Unify input schemas into a single `input` array with `in` field (`'path'`, `'query'`, `'body'`).
   New `InputSchema` and `InputLocation` types exported from core.
