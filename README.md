@@ -143,8 +143,8 @@ pnpm lint:fix    # lint
 
 ## Changelog
 
+- 0.11.2: Custom `meta.description` now replaces the default description instead of appending to it.
 - 0.11.1: Improve default descriptions: tRPC uses "procedures", Fastify uses "endpoints".
-  Custom `meta.description` is now appended to the base description instead of replacing it.
   CLI help text uses generic "endpoint" terminology covering both tRPC procedures and HTTP routes.
   CLI summary output uses correct noun ("endpoints" vs "procedures") based on introspection payload.
   Fix Fastify plugin excluding its own introspection route when using a custom path.

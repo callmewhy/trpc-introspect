@@ -130,8 +130,7 @@ describe('introspection plugin', () => {
     const response = await app.inject({ method: 'GET', url: '/_introspect' })
     const body = JSON.parse(response.body)
 
-    expect(body.description).toContain('Fastify HTTP API')
-    expect(body.description).toContain('My custom API')
+    expect(body.description).toBe('My custom API')
   })
 
   it('applies include filter', async () => {
