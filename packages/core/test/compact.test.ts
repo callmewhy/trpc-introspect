@@ -307,7 +307,7 @@ describe('compactSchema', () => {
     })
   })
 
-  it('strips pattern, format, title, default, examples, $id', () => {
+  it('strips pattern, format, title, examples, $id but keeps default', () => {
     const schema = {
       type: 'object',
       $id: 'MySchema',
@@ -330,7 +330,7 @@ describe('compactSchema', () => {
     expect(result).not.toHaveProperty('$id')
     expect(result).not.toHaveProperty('title')
     const props = result?.properties as Record<string, Record<string, unknown>>
-    expect(props.email).toEqual({ type: 'string', description: 'User email' })
+    expect(props.email).toEqual({ type: 'string', default: 'a@b.com', description: 'User email' })
   })
 
   it('simplifies anyOf with const values to enum', () => {

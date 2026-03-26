@@ -3,13 +3,13 @@ import type { JSONSchema } from './types'
 const MAX_SAFE_INT = 9007199254740991
 
 /** Keys that are pure noise for LLM consumers. */
-const STRIP_KEYS = new Set(['pattern', 'format', 'title', 'default', 'examples', '$id'])
+const STRIP_KEYS = new Set(['pattern', 'format', 'title', 'examples', '$id'])
 
 /**
  * Strips noise from a JSON Schema for LLM consumption.
  *
  * Removed: `additionalProperties: false`, `pattern`, `format`, `title`,
- * `default`, `examples`, `$id`, `maximum: MAX_SAFE_INT`.
+ * `examples`, `$id`, `maximum: MAX_SAFE_INT`.
  * Simplified: nullable `anyOf` → `type: [X, "null"]`, all-const `anyOf` → `enum`.
  * Preserved: `type`, `properties`, `required`, `items`, `enum`, `description`,
  * `minimum`, `maximum`, `minLength`, `maxLength`, `exclusiveMinimum`, `exclusiveMaximum`.
