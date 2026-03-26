@@ -57,7 +57,7 @@ export function introspectRouter(
       path,
       type,
       ...(description && { description }),
-      ...(meta && { meta }),
+      ...meta,
       ...(input && { input }),
       ...(output && { output }),
     })

@@ -46,7 +46,7 @@ describe('introspectRouter', () => {
     expect(result[0]?.description).toBe('Get a user by ID')
   })
 
-  it('extracts meta fields excluding description', () => {
+  it('flattens meta fields into endpoint', () => {
     const router = mockRouter({
       'user.create': mockProcedure({
         type: 'mutation',
@@ -58,10 +58,10 @@ describe('introspectRouter', () => {
     const result = introspectRouter(router)
 
     expect(result[0]?.description).toBe('Create a user')
-    expect(result[0]?.meta).toEqual({ auth: true, tags: ['users'] })
+    expect(result[0]).toMatchObject({ auth: true, tags: ['users'] })
   })
 
-  it('omits meta when only description is present', () => {
+  it('does not add extra fields when only description is present', () => {
     const router = mockRouter({
       'user.get': mockProcedure({
         type: 'query',
@@ -71,10 +71,10 @@ describe('introspectRouter', () => {
 
     const result = introspectRouter(router)
 
-    expect(result[0]).not.toHaveProperty('meta')
+    expect(result[0]).toEqual({ path: 'user.get', type: 'query', description: 'Get a user' })
   })
 
-  it('extracts meta with real tRPC procedures', () => {
+  it('flattens meta with real tRPC procedures', () => {
     const t = initTRPC.meta<{ description?: string, auth?: boolean }>().create()
     const router = t.router({
       'user.create': t.procedure
@@ -85,7 +85,7 @@ describe('introspectRouter', () => {
     const result = introspectRouter(router)
 
     expect(result[0]?.description).toBe('Create user')
-    expect(result[0]?.meta).toEqual({ auth: true })
+    expect(result[0]).toMatchObject({ auth: true })
   })
 
   it('converts input schema to JSON schema', () => {

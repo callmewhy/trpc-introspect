@@ -177,8 +177,8 @@ describe('introspection plugin', () => {
     const postRoute = body.endpoints.find((p: { method: string }) => p.method === 'POST')
     const getRoute = body.endpoints.find((p: { method: string }) => p.method === 'GET')
 
-    expect(postRoute.meta).toEqual({ auth: true })
-    expect(getRoute).not.toHaveProperty('meta')
+    expect(postRoute.auth).toBe(true)
+    expect(getRoute).not.toHaveProperty('auth')
   })
 
   it('ignores non-object meta in route config', async () => {
@@ -192,7 +192,7 @@ describe('introspection plugin', () => {
     const response = await app.inject({ method: 'GET', url: '/_introspect' })
     const body = JSON.parse(response.body)
 
-    expect(body.endpoints[0]).not.toHaveProperty('meta')
+    expect(Object.keys(body.endpoints[0])).toEqual(['path', 'type', 'method'])
   })
 
   it('sets custom serializer', async () => {

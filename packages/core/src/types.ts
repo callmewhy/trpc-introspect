@@ -7,8 +7,8 @@ export type ProcedureType = 'query' | 'mutation' | 'subscription' | 'http'
 interface BaseEndpointInfo {
   path: string
   description?: string
-  meta?: Record<string, unknown>
   output?: JSONSchema
+  [key: string]: unknown
 }
 
 interface RpcEndpointInfo extends BaseEndpointInfo {

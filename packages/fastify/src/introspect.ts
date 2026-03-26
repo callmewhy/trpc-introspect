@@ -65,7 +65,7 @@ export function introspectRoutes(
       type: 'http',
       method: method as HttpMethod,
       ...(description && { description }),
-      ...(meta && { meta }),
+      ...meta,
       ...(params && { params }),
       ...(query && { query }),
       ...(body && { body }),

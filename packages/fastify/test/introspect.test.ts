@@ -39,20 +39,19 @@ describe('introspectRoutes', () => {
     expect(result[2]?.method).toBe('DELETE')
   })
 
-  it('extracts description and meta', () => {
+  it('flattens description and meta into endpoint', () => {
     const routes = [route('POST', '/users', { description: 'Create user' }, { auth: true })]
     const result = introspectRoutes(routes)
 
     expect(result[0]?.description).toBe('Create user')
-    expect(result[0]?.meta).toEqual({ auth: true })
+    expect(result[0]).toMatchObject({ auth: true })
   })
 
-  it('omits description and meta when not provided', () => {
+  it('omits description when not provided', () => {
     const routes = [route('GET', '/users')]
     const result = introspectRoutes(routes)
 
     expect(result[0]).not.toHaveProperty('description')
-    expect(result[0]).not.toHaveProperty('meta')
   })
 
   it('extracts body schema for POST', () => {
