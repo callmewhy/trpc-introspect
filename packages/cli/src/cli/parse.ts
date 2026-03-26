@@ -6,12 +6,12 @@ const HELP = `Usage: api-introspect <base-url> [endpoint] [input]
 
 Discover and call API endpoints.
 
-IMPORTANT: Always run without [endpoint] first to list all available endpoints with input schemas. Do not guess endpoint names or input shapes -- use the introspection output to determine the correct values.
+IMPORTANT: Always run without [endpoint] first to discover all available endpoints. Do not guess endpoint names or request shapes -- use the introspection output to determine the correct values.
 
 Arguments:
   base-url    Base URL of the server (include path prefix if any)
   endpoint    Endpoint to call (tRPC procedure e.g. user.getById, or route e.g. /user/:id)
-  input       JSON input (must match the endpoint's input schema from introspection)
+  input       JSON input (must match the endpoint's schema from introspection)
 
 Options:
   -X, --method <METHOD>     HTTP method for disambiguating endpoints (e.g. POST)
