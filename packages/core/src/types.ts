@@ -34,11 +34,24 @@ export interface IntrospectOptions {
 
 export type Serializer = 'json' | 'superjson' | 'custom'
 
+export interface AuthInfo {
+  type: string
+  description?: string
+  [key: string]: unknown
+}
+
+export interface IntrospectionMeta {
+  name?: string
+  description?: string
+  baseUrl?: string
+  auth?: AuthInfo
+}
+
 export interface IntrospectionResult {
   name?: string
-  baseUrl?: string
+  baseUrl: string
   description: string
-  auth?: Record<string, unknown>
+  auth?: AuthInfo
   serializer: Serializer
   procedures?: EndpointInfo[]
   endpoints?: EndpointInfo[]

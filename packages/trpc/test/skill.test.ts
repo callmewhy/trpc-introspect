@@ -91,6 +91,6 @@ describe('meta fields', () => {
     const result = createIntrospectionRouter(t, t.router({}))
     const data = getResolver(result, '_introspect')() as IntrospectionResult
 
-    expect(Object.keys(data)).toEqual(['description', 'serializer', 'procedures'])
+    expect(Object.keys(data)).toEqual(['baseUrl', 'description', 'serializer', 'procedures'])
   })
 })

@@ -9,7 +9,9 @@ export type {
   IntrospectionRouterOptions,
 } from './types'
 export type {
+  AuthInfo,
   EndpointInfo,
+  IntrospectionMeta,
   IntrospectionResult,
   IntrospectOptions,
   Serializer,

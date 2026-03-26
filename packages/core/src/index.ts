@@ -1,8 +1,10 @@
 export { compactSchema } from './compact'
 export { isExcludedPath, isIncludedPath } from './filter'
 export type {
+  AuthInfo,
   EndpointInfo,
   HttpMethod,
+  IntrospectionMeta,
   IntrospectionResult,
   IntrospectOptions,
   JSONSchema,

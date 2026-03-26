@@ -29,7 +29,6 @@ async function introspectionPlugin(
     return
 
   const collected: RouteInfo[] = []
-  let payload: IntrospectionResult | null = null
 
   fastify.addHook('onRoute', (routeOptions) => {
     if (routeOptions.url === path)
@@ -58,19 +57,21 @@ async function introspectionPlugin(
     }
   })
 
-  fastify.get(path, async () => {
-    if (!payload) {
+  let precomputed: Omit<IntrospectionResult, 'baseUrl'> | null = null
+
+  fastify.get(path, async (request) => {
+    if (!precomputed) {
       const endpoints = introspectRoutes(collected, introspectOptions)
-      payload = {
+      precomputed = {
         ...(meta?.name && { name: meta.name }),
-        ...(meta?.baseUrl && { baseUrl: meta.baseUrl }),
         description: generateDescription(meta?.description),
         ...(meta?.auth && { auth: meta.auth }),
         serializer,
         endpoints,
       }
     }
-    return payload
+    const baseUrl = meta?.baseUrl ?? `${request.protocol}://${request.host}`
+    return { baseUrl, ...precomputed }
   })
 }
 

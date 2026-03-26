@@ -228,14 +228,14 @@ describe('introspection plugin', () => {
     expect(body.auth).toEqual({ type: 'header', name: 'x-api-key', description: 'API key' })
   })
 
-  it('omits baseUrl and auth when not provided', async () => {
+  it('infers baseUrl and omits auth when not provided', async () => {
     app = Fastify()
     await app.register(introspection)
 
     const response = await app.inject({ method: 'GET', url: '/_introspect' })
     const body = JSON.parse(response.body)
 
-    expect(body).not.toHaveProperty('baseUrl')
+    expect(body.baseUrl).toBe('http://localhost:80')
     expect(body).not.toHaveProperty('auth')
   })
 
