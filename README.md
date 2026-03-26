@@ -100,7 +100,7 @@ The introspection endpoint returns:
       "method": "PATCH",
       "input": [
         {
-          "in": "params",
+          "in": "path",
           "type": "object",
           "properties": {
             "id": {

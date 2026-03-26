@@ -83,7 +83,7 @@ function buildInput(
 ): InputSchema[] | undefined {
   const inputs: InputSchema[] = []
   const sources: [InputLocation, JSONSchema | undefined][] = [
-    ['params', params],
+    ['path', params],
     ['query', query],
     ['body', body],
   ]

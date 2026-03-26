@@ -115,7 +115,7 @@ export async function callProcedure(
           if (!props)
             continue
           const keys = Object.keys(props)
-          if (schema.in === 'params')
+          if (schema.in === 'path')
             keys.forEach(k => paramKeys.add(k))
           else if (schema.in === 'query')
             keys.forEach(k => queryKeys.add(k))

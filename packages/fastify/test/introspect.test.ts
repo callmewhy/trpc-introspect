@@ -97,7 +97,7 @@ describe('introspectRoutes', () => {
     const result = introspectRoutes(routes)
 
     expect(result[0]?.input).toEqual([{
-      in: 'params',
+      in: 'path',
       type: 'object',
       properties: { id: { type: 'number' } },
       required: ['id'],
@@ -120,7 +120,7 @@ describe('introspectRoutes', () => {
 
     expect(result[0]?.input).toEqual([
       {
-        in: 'params',
+        in: 'path',
         type: 'object',
         properties: { id: { type: 'number' } },
         required: ['id'],

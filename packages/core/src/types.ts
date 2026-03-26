@@ -4,7 +4,7 @@ export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS'
 
 export type ProcedureType = 'query' | 'mutation' | 'subscription' | 'http'
 
-export type InputLocation = 'params' | 'query' | 'body'
+export type InputLocation = 'path' | 'query' | 'body'
 
 export interface InputSchema extends JSONSchema {
   in: InputLocation
